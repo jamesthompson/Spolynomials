@@ -20,6 +20,9 @@ final class Polynomial[R](val terms: Map[Order, R]) {
   def apply(x: R)(implicit R: Ring[R]) : R =
     terms.map({ case (i, c) => c * (x ** i) }).foldLeft(R.zero)(_ + _)
 
+  // Is this polynomial zero?
+  def isZero : Boolean = terms.isEmpty
+
   // Normalize the polynomial, the largest order term coefficient will then be === R.one
   def monic(implicit R: Ring[R],
                      G: MultiplicativeGroup[R], 
@@ -61,7 +64,7 @@ object Polynomial {
 
 }
 
-// Polynomial Ring Instance
+// Polynomial Ring Instance - shouldn't it be a EuclideanRing???
 trait PolynomialRing[R] extends Ring[Polynomial[R]] {
   implicit def R: Ring[R]
 
@@ -79,6 +82,18 @@ trait PolynomialRing[R] extends Ring[Polynomial[R]] {
     x.terms.foldLeft(zero) { case (p, (i, c0)) =>
       plus(p, new Polynomial(y.terms map { case (j, c1) => (i + j) -> c0 * c1 }))
   }
+
+  // Euclidean Ring functions
+  // def quot(a: Polynomial[R], b: Polynomial[R]): Polynomial[R] = ???
+  
+  def mod(a: Polynomial[R], b: Polynomial[R]): Polynomial[R] = 
+    require(!b.isZero, "Can't divide a polynomial by zero")
+    
+
+  def gcd(a: Polynomial[R], b: Polynomial[R]): Polynomial[R] = 
+    require(!a.isZero || !b.isZero, "At lease one of the polynomials must be non-zero.")
+    if(!a.isZero) a.monic else gcd(b, a mod b)
+
 }
 
 // Specific Cases
