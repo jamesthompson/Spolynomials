@@ -12,12 +12,12 @@ import spire.syntax._
     (created by Tom Switzer)
 */
 
-type Order = Int // Only natural exponents are applicable
+type Order = Int // Only integer exponents are applicable
 
 final class Polynomial[R](val terms: Map[Order, R]) {
 
   // Evaluate for a given variable (symbol) in R.
-  def apply(x: R)(implicit R: Ring[R]): R =
+  def apply(x: R)(implicit R: Ring[R]) : R =
     terms.map({ case (i, c) => c * (x ** i) }).foldLeft(R.zero)(_ + _)
 
   // Normalize the polynomial, the largest order term coefficient will then be === R.one
@@ -28,9 +28,16 @@ final class Polynomial[R](val terms: Map[Order, R]) {
     new Polynomial(terms.toMap map { case (k,v) => k -> v / maxCoeffTerm })
   }
 
+  // Computes the derivative of the polynomial
+  def derivative(implicit R: Ring[R]) : Polynomial[R] =
+    new Polynomial(terms.filterNot(_._1 == 0).map { case (k, v) => k - 1 -> v * R.fromInt(k) } )
 
+  // Computer the indefinite integral of the polynomial + (n.b. plus a constant)
+  def integral(implicit R: Ring[R],
+                        G: MultiplicativeGroup[R]) : Polynomial[R] =
+    new Polynomial(terms.map { case (k, v) => k + 1 -> v / R.fromInt(k + 1) } )
 
-  // Formats polynomials in descending order. n.b. 1x^0 = 1 and 1x^1 = 1x here
+  // Formats polynomials in descending order. n.b. 1x^0 = "1" and -1x^1 = "-1x" here
   override def toString = { terms.toList.sortBy(_._1).reverse map { 
     case (i, c) => i match {
       case 0 => s"$c"
@@ -42,6 +49,7 @@ final class Polynomial[R](val terms: Map[Order, R]) {
 
 }
 
+// Companion object
 object Polynomial {
 
   implicit def ring[R: Ring] = new PolynomialRing[R] {
@@ -53,6 +61,7 @@ object Polynomial {
 
 }
 
+// Polynomial Ring Instance
 trait PolynomialRing[R] extends Ring[Polynomial[R]] {
   implicit def R: Ring[R]
 
@@ -73,7 +82,6 @@ trait PolynomialRing[R] extends Ring[Polynomial[R]] {
 }
 
 // Specific Cases
-
 object SpecialPolynomials {
 
   // Returns a list of legendre polynomials (Rational type) up to i
