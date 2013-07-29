@@ -13,6 +13,11 @@ final class Polynomial[R](val end: Endianness,
 													val coeffs: Vector[R])
 												 (implicit R: Ring[R]) {
 
+	implicit val swapEnd : Endianness = this.end match {
+		case BE => LE
+		case LE => BE
+	}
+
 	def apply(x: R) : R = 
 		makeTerms.map({ case (c, i) => c * (x ** i) }).foldLeft(R.zero)(_ + _)
 
@@ -28,17 +33,21 @@ final class Polynomial[R](val end: Endianness,
 		case LE => new Polynomial(LE, coeffs.map(_ / coeffs.last))
 	}
 
-	def derivative : Polynomial[R] = {
-		val derTerms = makeTerms.filterNot(_._2 == 0).map({case (c, i) => c * i})
-		end match {
-			case BE => new Polynomial(BE, derTerms)
-			case LE => if(coeffs.head == 0) new Polynomial(LE, Vector(R.fromInt(0)) ++ derTerms) else {
-				new Polynomial(LE, derTerms)
-			}
-		}
+	def swapEndianness : Polynomial[R] = end match {
+		case BE => new Polynomial(LE, coeffs.reverse)
+		case LE => new Polynomial(BE, coeffs.reverse)
 	}
 
-	def integral : Polynomial[R] = ???
+	def derivative : Polynomial[R] = 
+		new Polynomial(this.end, makeTerms.filterNot(_._2 == 0).map({case (c, i) => c * i}))
+
+	def integral(implicit G: MultiplicativeGroup[R]) : Polynomial[R] = {
+		val intTerms = makeTerms.map({case (c, i) => c / R.fromInt(i + 1)})
+		end match {
+			case BE => new Polynomial(this.end, intTerms :+ R.fromInt(0))
+			case LE => new Polynomial(this.end, R.fromInt(0) +: intTerms)
+		}
+	}
 
 	// A correctly formatted polynomial
 	override def toString = makeTerms map {
