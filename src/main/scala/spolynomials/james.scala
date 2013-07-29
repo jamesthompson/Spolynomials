@@ -86,13 +86,15 @@ trait PolynomialRing[R] extends Ring[Polynomial[R]] {
   // Euclidean Ring functions
   // def quot(a: Polynomial[R], b: Polynomial[R]): Polynomial[R] = ???
   
-  def mod(a: Polynomial[R], b: Polynomial[R]): Polynomial[R] = 
+  def mod(a: Polynomial[R], b: Polynomial[R]): Polynomial[R] = {
     require(!b.isZero, "Can't divide a polynomial by zero")
     
+  }
+
 
   def gcd(a: Polynomial[R], b: Polynomial[R]): Polynomial[R] = 
     require(!a.isZero || !b.isZero, "At lease one of the polynomials must be non-zero.")
-    if(!a.isZero) a.monic else gcd(b, a mod b)
+    if(!a.isZero) a.monic else gcd(b, mod(a,b))
 
 }
 
