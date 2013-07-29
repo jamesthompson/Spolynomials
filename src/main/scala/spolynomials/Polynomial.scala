@@ -23,11 +23,22 @@ final class Polynomial[R](val end: Endianness,
 
 	def isZero : Boolean = coeffs.isEmpty
 
-	def monic(implicit O: Ordering[R]) : Polynomial[R] = ???
+	def monic(implicit G: MultiplicativeGroup[R]) : Polynomial[R] = end match {
+		case BE => new Polynomial(BE, coeffs.map(_ / coeffs.head))
+		case LE => new Polynomial(LE, coeffs.map(_ / coeffs.last))
+	}
 
-	// def derivative : Polynomial[R] = ???
+	def derivative : Polynomial[R] = {
+		val derTerms = makeTerms.filterNot(_._2 == 0).map({case (c, i) => c * i})
+		end match {
+			case BE => new Polynomial(BE, derTerms)
+			case LE => if(coeffs.head == 0) new Polynomial(LE, Vector(R.fromInt(0)) ++ derTerms) else {
+				new Polynomial(LE, derTerms)
+			}
+		}
+	}
 
-	// def integral : Polynomial[R] = ???
+	def integral : Polynomial[R] = ???
 
 	// A correctly formatted polynomial
 	override def toString = makeTerms map {
