@@ -13,11 +13,6 @@ final class Polynomial[R](val end: Endianness,
 													val coeffs: Vector[R])
 												 (implicit R: Ring[R]) {
 
-	implicit val swapEnd : Endianness = this.end match {
-		case BE => LE
-		case LE => BE
-	}
-
 	def apply(x: R) : R = 
 		makeTerms.map({ case (c, i) => c * (x ** i) }).foldLeft(R.zero)(_ + _)
 
@@ -50,7 +45,8 @@ final class Polynomial[R](val end: Endianness,
 	}
 
 	// A correctly formatted polynomial
-	override def toString = makeTerms map {
+	override def toString = 
+		checkString( makeTerms map {
 		case (c, i) => (c, i) match {
 			case (0, i) => ""
 			case (1, 1) => "x"
@@ -60,7 +56,12 @@ final class Polynomial[R](val end: Endianness,
 			case (c, 0) => s"${c}"
 			case (c, i) => s"${c}x^$i"
 		}
-	} mkString(" + ")
+	} mkString(" + "))
+
+	def checkString(s: String) : String = end match {
+		case BE => if(s.reverse.take(3) == " + ") checkString(s.dropRight(3)) else s
+		case LE => if(s.take(3) == " + ") checkString(s.drop(3)) else s
+	}
 
 }
 
