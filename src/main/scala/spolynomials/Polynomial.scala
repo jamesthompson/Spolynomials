@@ -7,6 +7,17 @@ import spire.implicits._
 import spire.syntax._
 
 case class Term[R: Ring](val coeff: R, val index: Int)
+												(implicit R: Ring[R]) {
+	override def toString = (coeff, index) match {
+		case (0, i) => ""
+		case (1, 1) => "x"
+		case (1, 0) => "1"
+		case (c, 1) => s"${c}x"
+		case (1, i) => s"x^$i"
+		case (c, 0) => s"${c}"
+		case (c, i) => s"${c}x^$i"
+	}
+}
 
 trait TermOrder[R] extends Order[Term[R]] {
 	override def eqv(x:Term[R], y:Term[R]): Boolean = x.index == y.index
@@ -19,14 +30,28 @@ trait TermOrder[R] extends Order[Term[R]] {
 final class Poly[R](val terms: List[Term[R]])
 									 (implicit R: Ring[R]) {
 
-implicit def TermOrder[R: Ring] = new TermOrder[R] {}
+	implicit def TermOrder[R: Ring] = new TermOrder[R] {}
 
-implicit def BigEndianOrdering[R: Ring] = new ScalaOrdering[Term[R]] {
-  def compare(x:Term[R], y:Term[R]) =
-  	if(x.index < y.index) 1 else if(x == y) 0 else -1
-}
+	implicit object BigEndianOrdering extends ScalaOrdering[Term[R]] {
+	  def compare(x:Term[R], y:Term[R]) : Int =
+	  	if(x.index < y.index) 1 else if(x == y) 0 else -1
+	}
 
 	def apply(x: R): R = ???
+
+	override def toString = checkString(terms.sorted.mkString(" + "))
+
+	private def checkString(s: String) : String = 
+		if(s.reverse.take(3) == " + ") checkString(s.dropRight(3)) else s
+
+}
+
+// Companion object for Poly
+object Poly {
+
+	def apply[R: Ring](terms: (R, Int)*): Poly[R] =
+		new Poly(terms.toList.map({case (c, i) => Term(c, i)}))
+
 }
 
 
