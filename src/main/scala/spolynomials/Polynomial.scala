@@ -6,8 +6,7 @@ import spire.math._
 import spire.implicits._
 import spire.syntax._
 
-
-// Univariate Poly Term
+// Univariate polynomial term
 case class Term[F: Field](val coeff: F, val index: Int) {
 
 	def eval(x: F): F = coeff * (x ** index)
@@ -15,8 +14,6 @@ case class Term[F: Field](val coeff: F, val index: Int) {
 	def isIndexZero: Boolean = index == 0
 
 	def divideBy(x: F): Term[F] = Term(coeff / x, index)
-
-	def negate: Term[F] = Term(coeff.unary_-, index)
 
 	def der: Term[F] = Term(coeff * index, index - 1)
 
@@ -33,19 +30,27 @@ case class Term[F: Field](val coeff: F, val index: Int) {
 	}
 }
 
-trait TermAdditiveSemigroup[F] extends AdditiveSemigroup[Term[F]] {
+// Univariate polynomial terms form a ring
+trait TermRing[F] extends Ring[Term[F]] {
+
 	implicit def F: Field[F]
+
+	def negate(t: Term[F]): Term[F] =
+		Term(t.coeff.unary_-, t.index)
+
+	def zero: Term[F] = Term(F.zero, 0)
+
+	def one: Term[F] = Term(F.one, 0)
+
 	def plus(x: Term[F], y: Term[F]): Term[F] = 
 		Term(x.coeff + y.coeff, y.index)
-}
 
-trait TermMultiplicativeSemigroup[F] extends MultiplicativeSemigroup[Term[F]] {
-	implicit def F: Field[F]
 	def times(x: Term[F], y: Term[F]): Term[F] = 
 		Term(x.coeff * y.coeff, x.index + y.index)
+
 }
 
-// Univariate Poly Class
+// Univariate polynomial class
 final class Poly[F](val terms: List[Term[F]])
 									 (implicit F: Field[F]) {
 
@@ -63,17 +68,26 @@ final class Poly[F](val terms: List[Term[F]])
 		(terms ++ fillerTerms.toList).sorted.map(_.coeff)
 	}
 
-	lazy val maxOrder: Int = terms.min.index
+	// n.b. we have big endian ordering hence .min
+	lazy val maxTerm: Term[F] = isEmpty match {
+		case true => Term(F.zero, 0)
+		case false => terms.min 
+	}
 
-	lazy val maxOrderTermCoeff: F = terms.min.coeff
+	lazy val maxOrder: Int = maxTerm.index
 
-	lazy val maxTerm: Term[F] = terms.min
+	lazy val maxOrderTermCoeff: F = maxTerm.coeff
 	
 	def apply(x: F): F = terms.map(_.eval(x)).foldLeft(F.zero)(_ + _)
 
 	def isZero: Boolean = maxOrder == 0 && maxOrderTermCoeff == F.zero
 
-	def monic: Poly[F] = new Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
+	def isEmpty: Boolean = terms.isEmpty
+
+	def monic: Poly[F] = isEmpty match {
+		case true => this
+		case false => new Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
+	}
 	
 	def derivative: Poly[F] = new Poly(terms.filterNot(_.isIndexZero).map(_.der))
 	
@@ -103,11 +117,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 
   implicit def F: Field[F]
 
-  implicit def TAdder[F: Field] = new TermAdditiveSemigroup[F] {
-  	val F = Field[F]
-  }
-
-  implicit def TMultiplier[F: Field] = new TermMultiplicativeSemigroup[F] {
+  implicit def TR[F: Field] = new TermRing[F] {
   	val F = Field[F]
   }
 
@@ -121,7 +131,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   	})
 
   def negate(x: Poly[F]): Poly[F] =
-  	new Poly(x.terms.map(_.negate))
+  	new Poly(x.terms.map(_.unary_-))
 
   def times(x: Poly[F], y: Poly[F]) : Poly[F] = {
   	val allTerms = x.terms.flatMap(xterm => y.terms.map(_ * xterm))
@@ -129,8 +139,6 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   		l => l.foldLeft(Term(F.zero, 0))(_ + _)
   	})
   }
-
-  // Euclidean Ring functions
 
   def quotMod(x: Poly[F], y: Poly[F]): (Poly[F], Poly[F]) = {
   	require(!y.isZero, "Can't divide by polynomial of zero!")
@@ -142,7 +150,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 			(u == Nil || n < 0) match {
 				case true => (new Poly(makeTermsLE(q)), new Poly(makeTermsBE(u)))
 				case false => eval((u.head / v0) :: q, 
-														zipSum(u, y.coeffs.map(num => (num * (u.head / v0)).unary_-)).tail,
+														zipSum(u, y.coeffs.map(z => (z * (u.head / v0)).unary_-)).tail,
 														n - 1)
 			}
 		}
@@ -153,22 +161,19 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   
   def mod(x: Poly[F], y: Poly[F]) : Poly[F] = quotMod(x, y)._2
 
-  def zipSum(x: List[F], y: List[F]): List[F] = x.zip(y).map { case (a,b) => a + b }
+  def zipSum(x: List[F], y: List[F]): List[F] = 
+  	x.zip(y).map { case (a,b) => a + b }
 
   def makeTermsBE(xs: List[F]): List[Term[F]] = 
-  	xs.zip((0 until xs.length).toList.reverse).map({ case (c, i) => Term(c, i) })
+  	xs.zip((0 until xs.length).toList.reverse).map({ 
+  		case (c, i) => Term(c, i) })
 
   def makeTermsLE(xs: List[F]): List[Term[F]] = 
-  	xs.zip((0 until xs.length).toList).map({ case (c, i) => Term(c, i) })
+  	xs.zip((0 until xs.length).toList).map({ 
+  		case (c, i) => Term(c, i) })
 
   def gcd(x: Poly[F], y: Poly[F]) : Poly[F] = {
-  	require(!x.isZero || !y.isZero, "Can't evaluate gcd for polynomials of zero!")
-  	if(y.isZero) x.monic else gcd(y, mod(x, y))
+  	if(y.isZero && x.isZero) zero else if(y.isZero) x.monic else gcd(y, mod(x, y))
   }
 
 }
-
-import spire.syntax.literals._
-Poly(r"1/10" -> 3, r"1/20" -> 2, r"2/1" -> 1)
-Poly(r"1/4" -> 3, r"1/10" -> 2, r"3/1" -> 1)
-
