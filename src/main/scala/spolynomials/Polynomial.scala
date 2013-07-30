@@ -1,4 +1,4 @@
-package sPolys
+package SPolynomials
 
 import scala.math.{Ordering => ScalaOrdering} 
 import spire.algebra._
@@ -16,6 +16,8 @@ case class Term[F: Field](val coeff: F, val index: Int) {
 
 	def divideBy(x: F): Term[F] = Term(coeff / x, index)
 
+	def negate: Term[F] = Term(coeff.unary_-, index)
+
 	def der: Term[F] = Term(coeff * index, index - 1)
 
 	def int: Term[F] = Term(coeff / (index + 1), index + 1)
@@ -31,10 +33,16 @@ case class Term[F: Field](val coeff: F, val index: Int) {
 	}
 }
 
-trait TermSemigroup[F] extends AdditiveSemigroup[Term[F]] {
+trait TermAdditiveSemigroup[F] extends AdditiveSemigroup[Term[F]] {
 	implicit def F: Field[F]
 	def plus(x: Term[F], y: Term[F]): Term[F] = 
 		Term(x.coeff + y.coeff, y.index)
+}
+
+trait TermMultiplicativeSemigroup[F] extends MultiplicativeSemigroup[Term[F]] {
+	implicit def F: Field[F]
+	def times(x: Term[F], y: Term[F]): Term[F] = 
+		Term(x.coeff * y.coeff, x.index + y.index)
 }
 
 // Univariate Poly Class
@@ -84,7 +92,11 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 
   implicit def F: Field[F]
 
-  implicit def TS[F: Field] = new TermSemigroup[F] {
+  implicit def TAdder[F: Field] = new TermAdditiveSemigroup[F] {
+  	val F = Field[F]
+  }
+
+  implicit def TMultiplier[F: Field] = new TermMultiplicativeSemigroup[F] {
   	val F = Field[F]
   }
 
@@ -92,20 +104,19 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 
   def one = new Poly(List(Term(F.one, 0)))
 
-  def plus(x: Poly[F], y: Poly[F]) : Poly[F] = {
-  	val allTerms = x.terms ++ y.terms
-  	val newTerms: Map[Int, List[Term[F]]] = allTerms.groupBy(_.index)
-  	new Poly(newTerms.values.toList.map(_.foldLeft(Term(F.zero, 0))(_ + _)))
-	}
+  def plus(x: Poly[F], y: Poly[F]) : Poly[F] =
+  	new Poly((x.terms ++ y.terms).groupBy(_.index).values.toList.map {
+  		l => l.foldLeft(Term(F.zero, 0))(_ + _)
+  	})
 
   def negate(x: Poly[F]): Poly[F] =
-  	zero
+  	new Poly(x.terms.map(_.negate))
 
   def times(x: Poly[F], y: Poly[F]) : Poly[F] = {
-   //  x.makeBE.makeTerms.foldLeft(zero) { case (p, (c0, i)) =>
-   //    plus(p, new Poly(y.makeBE.makeTerms map { case (c1, j) => (i + j) -> c0 * c1 }))
-  	// }
-  	zero
+  	val allTerms = x.terms.flatMap(xterm => y.terms.map(_ * xterm))
+  	new Poly(allTerms.groupBy(_.index).values.toList.map {
+  		l => l.foldLeft(Term(F.zero, 0))(_ + _)
+  	})
   }
 
   // Euclidean Ring functions
@@ -113,6 +124,12 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   
   def mod(a: Poly[F], b: Poly[F]) : Poly[F] = zero
 
-  def gcd(a: Poly[F], b: Poly[F]) : Poly[F] = zero
+  def gcd(a: Poly[F], b: Poly[F]) : Poly[F] = 
+  	
 
 }
+
+import spire.syntax.literals._
+Poly(r"1/10" -> 3, r"1/20" -> 2, r"2/1" -> 1)
+Poly(r"1/4" -> 3, r"1/10" -> 2, r"3/1" -> 1)
+
