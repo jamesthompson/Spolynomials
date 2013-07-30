@@ -54,13 +54,24 @@ final class Poly[F](val terms: List[Term[F]])
 	  	if(x.index < y.index) 1 else if(x.index == y.index) 0 else -1
 	}
 
-	lazy val coeffs: List[F] = terms.sorted.map(_.coeff)
+	lazy val coeffs: List[F] = {
+		val indices = terms.sorted.map(_.index)
+		val fillerTerms = for {
+			i <- 0 to maxOrder;
+			if(!indices.contains(i))
+		} yield Term(F.zero, i)
+		(terms ++ fillerTerms.toList).sorted.map(_.coeff)
+	}
 
 	lazy val maxOrder: Int = terms.min.index
 
 	lazy val maxOrderTermCoeff: F = terms.min.coeff
+
+	lazy val maxTerm: Term[F] = terms.min
 	
 	def apply(x: F): F = terms.map(_.eval(x)).foldLeft(F.zero)(_ + _)
+
+	def isZero: Boolean = maxOrder == 0 && maxOrderTermCoeff == F.zero
 
 	def monic: Poly[F] = new Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
 	
@@ -120,12 +131,30 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   }
 
   // Euclidean Ring functions
-  def quot(a: Poly[F], b: Poly[F]): Poly[F] = zero
+  def quot(x: Poly[F], y: Poly[F]): Poly[F] = zero
   
-  def mod(a: Poly[F], b: Poly[F]) : Poly[F] = zero
+  def mod(x: Poly[F], y: Poly[F]) : Poly[F] = {
+  	require(!y.isZero, "Can't divide by polynomial of zero!")
+		def eval(u: List[F], n: Int): Poly[F] = {
+			val v0 : F = y.coeffs match {
+				case Nil => 0
+				case v::vs => v
+			}
+			if(u == Nil || n < 0) new Poly(makeTerms(u)) else eval(
+				zipSum(u, y.coeffs.map(num => (num * (u.head / v0)).unary_-)).tail, n - 1)
+		}
+		eval(x.coeffs, x.coeffs.length - y.coeffs.length)
+  }
 
-  def gcd(a: Poly[F], b: Poly[F]) : Poly[F] = 
-  	
+  def zipSum(x: List[F], y: List[F]): List[F] = x.zip(y).map { case (a,b) => a + b }
+
+  def makeTerms(xs: List[F]): List[Term[F]] = 
+  	xs.zip((0 to xs.length).toList.reverse).map({ case (c, i) => Term(c, i) })
+
+  def gcd(x: Poly[F], y: Poly[F]) : Poly[F] = {
+  	require(!x.isZero && !y.isZero, "Can't evaluate gcd for polynomials of zero!")
+  	if(y.isZero) x.monic else gcd(y, mod(x, y))
+  }
 
 }
 
