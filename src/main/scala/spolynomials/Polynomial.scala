@@ -131,28 +131,38 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   }
 
   // Euclidean Ring functions
-  def quot(x: Poly[F], y: Poly[F]): Poly[F] = zero
-  
-  def mod(x: Poly[F], y: Poly[F]) : Poly[F] = {
+
+  def quotMod(x: Poly[F], y: Poly[F]): (Poly[F], Poly[F]) = {
   	require(!y.isZero, "Can't divide by polynomial of zero!")
-		def eval(u: List[F], n: Int): Poly[F] = {
+		def eval(q: List[F], u: List[F], n: Int): (Poly[F], Poly[F]) = {
 			val v0 : F = y.coeffs match {
 				case Nil => F.zero
 				case v::vs => v
 			}
-			if(u == Nil || n < 0) new Poly(makeTerms(u)) else eval(
-				zipSum(u, y.coeffs.map(num => (num * (u.head / v0)).unary_-)).tail, n - 1)
+			(u == Nil || n < 0) match {
+				case true => (new Poly(makeTermsLE(q)), new Poly(makeTermsBE(u)))
+				case false => eval((u.head / v0) :: q, 
+														zipSum(u, y.coeffs.map(num => (num * (u.head / v0)).unary_-)).tail,
+														n - 1)
+			}
 		}
-		eval(x.coeffs, x.coeffs.length - y.coeffs.length)
+		eval(Nil, x.coeffs, x.maxOrder - y.maxOrder)
   }
+
+  def quot(x: Poly[F], y: Poly[F]): Poly[F] = quotMod(x, y)._1
+  
+  def mod(x: Poly[F], y: Poly[F]) : Poly[F] = quotMod(x, y)._2
 
   def zipSum(x: List[F], y: List[F]): List[F] = x.zip(y).map { case (a,b) => a + b }
 
-  def makeTerms(xs: List[F]): List[Term[F]] = 
-  	xs.zip((0 to xs.length).toList.reverse).map({ case (c, i) => Term(c, i) })
+  def makeTermsBE(xs: List[F]): List[Term[F]] = 
+  	xs.zip((0 until xs.length).toList.reverse).map({ case (c, i) => Term(c, i) })
+
+  def makeTermsLE(xs: List[F]): List[Term[F]] = 
+  	xs.zip((0 until xs.length).toList).map({ case (c, i) => Term(c, i) })
 
   def gcd(x: Poly[F], y: Poly[F]) : Poly[F] = {
-  	require(!x.isZero && !y.isZero, "Can't evaluate gcd for polynomials of zero!")
+  	require(!x.isZero || !y.isZero, "Can't evaluate gcd for polynomials of zero!")
   	if(y.isZero) x.monic else gcd(y, mod(x, y))
   }
 
