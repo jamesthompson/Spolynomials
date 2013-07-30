@@ -7,12 +7,17 @@ import spire.implicits._
 import spire.syntax._
 
 
-// n.b. polynomial coefficients form a Field.
 case class Term[F: Field](val coeff: F, val index: Int) {
 
 	def eval(x: F): F = coeff * (x ** index)
 
-	def divideBy(x: F): Term[F] = Term(coeff / x, index) 
+	def isIndexZero: Boolean = index == 0
+
+	def divideBy(x: F): Term[F] = Term(coeff / x, index)
+
+	def der: Term[F] = Term(coeff * index, index - 1)
+
+	def int: Term[F] = Term(coeff / (index + 1), index + 1)
 
 	override def toString = (coeff, index) match {
 		case (0, i) => ""
@@ -25,35 +30,29 @@ case class Term[F: Field](val coeff: F, val index: Int) {
 	}
 }
 
-trait TermOrder[F] extends Order[Term[F]] {
-	override def eqv(x:Term[F], y:Term[F]): Boolean = x.index == y.index
-	override def neqv(x:Term[F], y:Term[F]): Boolean = x.index != y.index
-	def compare(x: Term[F], y:Term[F]): Int =
-		if(x.index < y.index) -1 else if(eqv(x, y)) 0 else 1
-}
-
-
+// Univariate Polynomial Class
 final class Poly[F](val terms: List[Term[F]])
 									 (implicit F: Field[F]) {
 
-	implicit def TermOrder[F: Ring] = new TermOrder[F] {}
-
-	implicit object BigEndianOrdering extends ScalaOrdering[Term[F]] {
+	implicit object BigEndianPolyOrdering extends ScalaOrdering[Term[F]] {
 	  def compare(x:Term[F], y:Term[F]) : Int =
-	  	if(x.index < y.index) 1 else if(x == y) 0 else -1
+	  	if(x.index < y.index) 1 else if(x.index == y.index) 0 else -1
 	}
 
-	lazy val coeffs: List[F] = ???
+	lazy val coeffs: List[F] = terms.sorted.map(_.coeff)
 
+	lazy val highestOrderTermCoeff: F = terms.min.coeff
+	
 	def apply(x: F): F = terms.map(_.eval(x)).foldLeft(F.zero)(_ + _)
 
-	def monic: Poly[F] = {
-		val highestOrderTermCoeff = terms.max.coeff
-		new Poly(terms.map(_.divideBy(highestOrderTermCoeff)))
-	}
-
+	def monic: Poly[F] = new Poly(terms.map(_.divideBy(highestOrderTermCoeff)))
+	
+	def derivative: Poly[F] = new Poly(terms.filterNot(_.isIndexZero).map(_.der))
+	
+	def integral: Poly[F] = new Poly(terms.map(_.int))
+	
 	override def toString = checkString(terms.sorted.mkString(" + "))
-
+	
 	private def checkString(s: String) : String = 
 		if(s.reverse.take(3) == " + ") checkString(s.dropRight(3)) else s
 
