@@ -137,7 +137,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   	require(!y.isZero, "Can't divide by polynomial of zero!")
 		def eval(u: List[F], n: Int): Poly[F] = {
 			val v0 : F = y.coeffs match {
-				case Nil => 0
+				case Nil => F.zero
 				case v::vs => v
 			}
 			if(u == Nil || n < 0) new Poly(makeTerms(u)) else eval(
