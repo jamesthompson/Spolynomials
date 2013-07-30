@@ -6,8 +6,11 @@ import spire.math._
 import spire.implicits._
 import spire.syntax._
 
-case class Term[R: Ring](val coeff: R, val index: Int)
-												(implicit R: Ring[R]) {
+case class Term[R: Ring](val coeff: R, val index: Int) {
+
+	def eval(x: R): R = 
+		coeff * (x ** index)
+
 	override def toString = (coeff, index) match {
 		case (0, i) => ""
 		case (1, 1) => "x"
@@ -37,7 +40,9 @@ final class Poly[R](val terms: List[Term[R]])
 	  	if(x.index < y.index) 1 else if(x == y) 0 else -1
 	}
 
-	def apply(x: R): R = ???
+	lazy val coeffs: List[R] = ???
+
+	def apply(x: R): R = terms.map(_.eval(x)).foldLeft(R.zero)(_ + _)
 
 	override def toString = checkString(terms.sorted.mkString(" + "))
 
