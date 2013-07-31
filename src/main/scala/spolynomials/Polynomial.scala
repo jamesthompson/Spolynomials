@@ -78,6 +78,10 @@ final class Poly[F](val terms: List[Term[F]])
 	lazy val maxOrder: Int = maxTerm.index
 
 	lazy val maxOrderTermCoeff: F = maxTerm.coeff
+
+	lazy val degree: Int = 
+		if(terms.isEmpty) 0 else 
+			terms.sorted.find(_.coeff != F.zero).getOrElse(Term(F.zero, 0)).index
 	
 	def apply(x: F): F = terms.map(_.eval(x)).foldLeft(F.zero)(_ + _)
 
@@ -106,7 +110,14 @@ object Poly {
     val F = Field[F]
   }
 
-	def apply[F: Field](terms: (F, Int)*): Poly[F] =
-		new Poly(terms.toList.map({case (c, i) => Term(c, i)}))
+	def apply[F: Field](terms: (F, Int)*): Poly[F] = {
+		val checkedTerms = terms.toList.filter({case (c, i) => c != 0})
+		new Poly(checkedTerms.map({case (c,i) => Term(c, i)}))
+	}
+
+	def fromList[F: Field](terms: List[(F, Int)]): Poly[F] = {
+		val checkedTerms = terms.filter({case (c, i) => c != 0})
+		new Poly(checkedTerms.map({case (c,i) => Term(c, i)}))
+	}
 
 }
