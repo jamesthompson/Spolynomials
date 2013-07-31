@@ -1,0 +1,14 @@
+[info] Running spolynomials.BasicPolynomialTesting 
+[debug] Starting sandboxed run...
+[debug] Waiting for threads to exit or System.exit to be called.
+[debug]   Classpath:
+[debug] 	/Users/James/Desktop/Spolynomials/target/scala-2.10/classes
+[debug] 	/Users/James/.sbt/boot/scala-2.10.2/lib/scala-library.jar
+[debug] 	/Users/James/.ivy2/cache/org.spire-math/spire_2.10/jars/spire_2.10-0.5.0.jar
+[debug] 	/Users/James/.ivy2/cache/org.spire-math/macros_2.10/jars/macros_2.10-0.5.0.jar
+[debug] 	/Users/James/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.2.jar
+[debug] Waiting for thread run-main to exit
+[debug] 	Thread run-main exited.
+[debug] Interrupting remaining threads (should be all daemons).
+[debug] Sandboxed run complete..
+[debug] Exited with code 0

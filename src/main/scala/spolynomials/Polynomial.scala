@@ -1,4 +1,4 @@
-package SPolynomials
+package spolynomials
 
 import scala.math.{Ordering => ScalaOrdering} 
 import spire.algebra._
@@ -28,6 +28,7 @@ case class Term[F: Field](val coeff: F, val index: Int) {
 		case (c, 0) => s"${c}"
 		case (c, i) => s"${c}x^$i"
 	}
+
 }
 
 // Univariate polynomial terms form a ring
@@ -68,8 +69,8 @@ final class Poly[F](val terms: List[Term[F]])
 		(terms ++ fillerTerms.toList).sorted.map(_.coeff)
 	}
 
-	// n.b. we have big endian ordering hence .min
-	lazy val maxTerm: Term[F] = isEmpty match {
+	// n.b. we have big endian ordering implicit in this class hence .min
+	lazy val maxTerm: Term[F] = isZero match {
 		case true => Term(F.zero, 0)
 		case false => terms.min 
 	}
@@ -80,11 +81,9 @@ final class Poly[F](val terms: List[Term[F]])
 	
 	def apply(x: F): F = terms.map(_.eval(x)).foldLeft(F.zero)(_ + _)
 
-	def isZero: Boolean = maxOrder == 0 && maxOrderTermCoeff == F.zero
+	def isZero: Boolean = terms.isEmpty
 
-	def isEmpty: Boolean = terms.isEmpty
-
-	def monic: Poly[F] = isEmpty match {
+	def monic: Poly[F] = isZero match {
 		case true => this
 		case false => new Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
 	}
@@ -109,71 +108,5 @@ object Poly {
 
 	def apply[F: Field](terms: (F, Int)*): Poly[F] =
 		new Poly(terms.toList.map({case (c, i) => Term(c, i)}))
-
-}
-
-// Polynomials form a Euclidean Ring
-trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
-
-  implicit def F: Field[F]
-
-  implicit def TR[F: Field] = new TermRing[F] {
-  	val F = Field[F]
-  }
-
-  def zero = new Poly(List(Term(F.zero, 0)))
-
-  def one = new Poly(List(Term(F.one, 0)))
-
-  def plus(x: Poly[F], y: Poly[F]) : Poly[F] =
-  	new Poly((x.terms ++ y.terms).groupBy(_.index).values.toList.map {
-  		l => l.foldLeft(Term(F.zero, 0))(_ + _)
-  	})
-
-  def negate(x: Poly[F]): Poly[F] =
-  	new Poly(x.terms.map(_.unary_-))
-
-  def times(x: Poly[F], y: Poly[F]) : Poly[F] = {
-  	val allTerms = x.terms.flatMap(xterm => y.terms.map(_ * xterm))
-  	new Poly(allTerms.groupBy(_.index).values.toList.map {
-  		l => l.foldLeft(Term(F.zero, 0))(_ + _)
-  	})
-  }
-
-  def quotMod(x: Poly[F], y: Poly[F]): (Poly[F], Poly[F]) = {
-  	require(!y.isZero, "Can't divide by polynomial of zero!")
-		def eval(q: List[F], u: List[F], n: Int): (Poly[F], Poly[F]) = {
-			val v0 : F = y.coeffs match {
-				case Nil => F.zero
-				case v::vs => v
-			}
-			(u == Nil || n < 0) match {
-				case true => (new Poly(makeTermsLE(q)), new Poly(makeTermsBE(u)))
-				case false => eval((u.head / v0) :: q, 
-														zipSum(u, y.coeffs.map(z => (z * (u.head / v0)).unary_-)).tail,
-														n - 1)
-			}
-		}
-		eval(Nil, x.coeffs, x.maxOrder - y.maxOrder)
-  }
-
-  def quot(x: Poly[F], y: Poly[F]): Poly[F] = quotMod(x, y)._1
-  
-  def mod(x: Poly[F], y: Poly[F]) : Poly[F] = quotMod(x, y)._2
-
-  def zipSum(x: List[F], y: List[F]): List[F] = 
-  	x.zip(y).map { case (a,b) => a + b }
-
-  def makeTermsBE(xs: List[F]): List[Term[F]] = 
-  	xs.zip((0 until xs.length).toList.reverse).map({ 
-  		case (c, i) => Term(c, i) })
-
-  def makeTermsLE(xs: List[F]): List[Term[F]] = 
-  	xs.zip((0 until xs.length).toList).map({ 
-  		case (c, i) => Term(c, i) })
-
-  def gcd(x: Poly[F], y: Poly[F]) : Poly[F] = {
-  	if(y.isZero && x.isZero) zero else if(y.isZero) x.monic else gcd(y, mod(x, y))
-  }
 
 }

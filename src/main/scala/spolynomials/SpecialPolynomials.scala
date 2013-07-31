@@ -1,6 +1,13 @@
-package SPolys
+package spolynomials
 
-  // Returns a list of legendre Polys (Rational type) up to i
+import spire.algebra._
+import spire.math._
+import spire.implicits._
+import spire.syntax._
+
+object SpecialPolynomials {
+
+  // Returns a list of legendre polynomials (Rational kind) up to i
   def legendres(i: Int)(implicit R: Numeric[Rational]) : List[Poly[Rational]] = {
     val one = Poly(R.one -> 0)
     val x = Poly(R.one -> 1)
@@ -14,3 +21,6 @@ package SPolys
     }
     leg.take(i).toList
   }
+
+}
+
