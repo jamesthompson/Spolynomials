@@ -11,10 +11,6 @@ object BasicPolynomialTesting extends App {
 	val a = Poly(r"1/100" -> 3, r"1/20" -> 2, r"2/1" -> 1)
 	val b = Poly(r"1/4" -> 3, r"1/10" -> 2, r"3/1" -> 1)
 
-	val c = Poly(r"0/1" -> 1)
-
-	println(s"c checks = ${c.terms} $c")
-
 	val aeval = a(r"2/1")
 	val beval = b(r"1/2")
 
@@ -35,10 +31,5 @@ object BasicPolynomialTesting extends App {
 	println(s"b's integral ${b.integral}")
 	println(s"a evaluated with x = 2/1 = $aeval")
 	println(s"b evaluated with x = 1/2 = $beval")
-
-	// val fmod = a % b
-	// val smod = b % fmod
-	// println(s"fmod terms = ${fmod.terms.length}")
-	// println(s"firstmod = $fmod , secondmod = $smod")
 
 }

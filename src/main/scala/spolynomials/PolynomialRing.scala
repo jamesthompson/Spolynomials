@@ -18,7 +18,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 
   def one = new Poly(List(Term(F.one, 0)))
 
-  def plus(x: Poly[F], y: Poly[F]) : Poly[F] =
+  def plus(x: Poly[F], y: Poly[F]): Poly[F] =
   	new Poly((x.terms ++ y.terms).groupBy(_.index).values.toList.map {
   		l => l.foldLeft(Term(F.zero, 0))(_ + _)
   	})
@@ -67,9 +67,9 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 
   def quot(x: Poly[F], y: Poly[F]): Poly[F] = quotMod(x, y)._1
   
-  def mod(x: Poly[F], y: Poly[F]) : Poly[F] = quotMod(x, y)._2
+  def mod(x: Poly[F], y: Poly[F]): Poly[F] = quotMod(x, y)._2
 
-  def gcd(x: Poly[F], y: Poly[F]) : Poly[F] = 
+  def gcd(x: Poly[F], y: Poly[F]): Poly[F] = 
   	if(y.isZero && x.isZero) zero else if(y.isZero) x.monic
       else gcd(y, mod(x, y))
 
