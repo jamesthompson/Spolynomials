@@ -53,7 +53,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
             makeTerms(
               zipSum(
                 u.coeffs, 
-                new Poly(y.terms.map(t => (t * u.maxTerm.divideBy(v0.coeff)).unary_-)).coeffs
+                new Poly(y.terms.map(t => (t * u.maxTerm.divideBy(v0.unary_-.coeff)))).coeffs
               )
             ).tail
           ),
@@ -68,10 +68,25 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 
   def quot(x: Poly[F], y: Poly[F]): Poly[F] = quotMod(x, y)._1
   
-  def mod(x: Poly[F], y: Poly[F]): Poly[F] = quotMod(x, y)._2
+  def mod(x: Poly[F], y: Poly[F]): Poly[F] = {
+    require(!y.isZero, "Can't divide by polynomial of zero!")
+    def eval(u: Poly[F], n: Int): Poly[F] = {
+      lazy val q0 = u.maxTerm.coeff / y.maxTerm.coeff
+      lazy val uprime = zipSum(u.coeffs, y.coeffs.map(_ * q0.unary_-))
+      if(u.isZero || n < 0) u else eval(uprime, n - 1)
+    }
+    eval(x, x.maxOrder - y.maxOrder)
+  }
 
   def gcd(x: Poly[F], y: Poly[F]): Poly[F] = 
   	if(y.isZero && x.isZero) zero else if(y.isZero) x.monic
       else gcd(y, mod(x, y))
+
+  def zipSum(x: List[F], y: List[F]): Poly[F] = {
+    val (s, l) = if(x.length > y.length) (y, x) else (x, y)
+    val cs = s.zip(l).map(z => z._1 + z._2) ++ l.drop(s.length)
+    Poly.fromList(cs.zip(((cs.length - 1) to 0 by -1)).tail)
+  }
+
 
 }
