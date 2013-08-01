@@ -46,7 +46,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
     def eval(q: Poly[F], u: Poly[F], n: Int): (Poly[F], Poly[F]) = {
       val v0 : Term[F] = if(y.isZero) Term(F.zero, 0) else y.maxTerm 
       (u.isZero || n < 0) match {
-        case true => (q, u)
+        case true => (q, u) // THIS IS KNACKERED! ARGH!
         case false => eval(
           new Poly((u.maxTerm.divideBy(v0.coeff)) :: q.terms), 
           Poly.fromList(
@@ -61,6 +61,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
         )
       }
     }
+
     eval(Poly(F.zero -> 0), x, x.degree - y.degree)
   }
 

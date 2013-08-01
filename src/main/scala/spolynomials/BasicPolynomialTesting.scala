@@ -19,7 +19,7 @@ object BasicPolynomialTesting extends App {
 	println(s"a + b = ${a + b}")
 	println(s"a - b = ${a - b}")
 	println(s"a * b = ${a * b}")
-	println(s"gcd(a,b) = ${gcd(a,b)}")
+	// println(s"gcd(a,b) = ${gcd(a,b)}")
 	println(s"a % b = ${a % b}")
 	println(s"a /~ b = ${a /~ b}")
 	println(s"a /% b = ${a /% b}")
