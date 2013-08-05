@@ -57,21 +57,17 @@ trait TermRing[C, E] extends Ring[Term[C, E]] {
 	implicit val ering: Ring[E]
 	implicit val conve: ConvertableFrom[E]
 
-	def negate(t: Term[C, E])(implicit cring: Ring[C]): Term[C, E] =
+	def negate(t: Term[C, E]): Term[C, E] = 
 		Term(cring.negate(t.coeff), t.exp)
 
-	def zero(implicit cring: Ring[C], ering: Ring[E]): Term[C, E] =
-		Term(cring.zero, ering.zero)
+	def zero: Term[C, E] = Term(cring.zero, ering.zero)
 
-	def one(implicit cring: Ring[C], ering: Ring[E]): Term[C, E] = 
-		Term(cring.one, ering.zero)
+	def one: Term[C, E] = Term(cring.one, ering.zero)
 
-	def plus(x: Term[C, E], y: Term[C, E])
-					(implicit cring: Ring[C]): Term[C, E] = 
+	def plus(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
 		Term(cring.plus(x.coeff, y.coeff), y.exp)
 
-	def times(x: Term[C, E], y: Term[C, E])
-					 (implicit cring: Ring[C], ering: Ring[E]): Term[C, E] = 
+	def times(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
 		Term(cring.times(x.coeff, y.coeff), ering.plus(x.exp, y.exp))
 
 }

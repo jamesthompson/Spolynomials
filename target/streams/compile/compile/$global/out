@@ -2,53 +2,14 @@
 [debug] Initial source changes: 
 [debug] 	removed:Set()
 [debug] 	added: Set()
-[debug] 	modified: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala)
-[debug] Removed products: Set(/Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$5.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$plus$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$times$2$$anonfun$apply$3.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/BasicPolynomialTesting.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Term.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$coeffs$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$3.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$derivative$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$apply$3.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/SpecialPolynomials$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/TermRing.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/BasicPolynomialTesting$delayedInit$body.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$class.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$BigEndianPolyOrdering$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$plus$2$$anonfun$apply$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$apply$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$apply$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$times$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/BasicPolynomialTesting$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$integral$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$monic$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/SpecialPolynomials$$anonfun$leg$lzycompute$1$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/SpecialPolynomials.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$4.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/TermRing$class.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anon$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$times$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$derivative$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/SpecialPolynomials$$anonfun$spolynomials$SpecialPolynomials$$loop$1$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Term$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$uprime$lzycompute$1$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$quotMod$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anon$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$degree$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$1$$anonfun$apply$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$degree$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$fromList$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$plus$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/PolynomialRing$$anonfun$negate$1.class)
+[debug] 	modified: Set()
+[debug] Removed products: Set()
 [debug] Modified external sources: Set()
 [debug] Modified binary dependencies: Set()
-[debug] Initial directly invalidated sources: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala)
+[debug] Initial directly invalidated sources: Set()
 [debug] 
 [debug] Sources indirectly invalidated by:
-[debug] 	product: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/BasicPolynomialTesting.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/SpecialPolynomials.scala)
+[debug] 	product: Set()
 [debug] 	binary dep: Set()
 [debug] 	external source: Set()
-[debug] Initially invalidated: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/BasicPolynomialTesting.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/SpecialPolynomials.scala)
-[info] Compiling 4 Scala sources to /Users/James/Desktop/Spolynomials/target/scala-2.10/classes...
-[debug] Running cached compiler 346b660c, interfacing (CompilerInterface) with Scala compiler version 2.10.2
-[debug] Calling Scala compiler with arguments  (CompilerInterface):
-[debug] 	-d
-[debug] 	/Users/James/Desktop/Spolynomials/target/scala-2.10/classes
-[debug] 	-bootclasspath
-[debug] 	/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/classes:/Users/James/.sbt/boot/scala-2.10.2/lib/scala-library.jar
-[debug] 	-classpath
-[debug] 	/Users/James/Desktop/Spolynomials/target/scala-2.10/classes:/Users/James/.ivy2/cache/org.spire-math/spire_2.10/jars/spire_2.10-0.5.0.jar:/Users/James/.ivy2/cache/org.spire-math/macros_2.10/jars/macros_2.10-0.5.0.jar:/Users/James/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.2.jar
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:130: No ClassTag available for F
-[error] 		new Poly(checkedTerms.map({case (c,i) => Term(c, i)}))
-[error] 		^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:135: No ClassTag available for F
-[error] 		new Poly(checkedTerms.map({case (c,i) => Term(c, i)}).toArray)
-[error] 		^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala:22: type mismatch;
-[error]  found   : Array[spolynomials.Term[F]]
-[error]  required: (F, Int)
-[error]   	Poly((x.terms ++ y.terms).groupBy(_.index).values.toArray.map {
-[error]   	                                                              ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala:27: No ClassTag available for F
-[error]   	new Poly(x.terms.map(_.unary_-))
-[error]   	^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala:31: No ClassTag available for F
-[error]   	new Poly(allTerms.groupBy(_.index).values.toArray.map {
-[error]   	^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala:50: type mismatch;
-[error]  found   : Array[F]
-[error]  required: List[F]
-[error]       lazy val uprime = zipSum(u.coeffs, y.coeffs.map(_ * q0.unary_-))
-[error]                                  ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala:50: type mismatch;
-[error]  found   : scala.collection.mutable.ArraySeq[F]
-[error]  required: List[F]
-[error]       lazy val uprime = zipSum(u.coeffs, y.coeffs.map(_ * q0.unary_-))
-[error]                                                      ^
-[error] 7 errors found
-[debug] Compilation failed (CompilerInterface)
-[error] (compile:compile) Compilation failed
+[debug] Initially invalidated: Set()
