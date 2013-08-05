@@ -12,6 +12,9 @@ object BasicPolynomialTesting extends App {
 	val a = new Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
 
 	println(a)
+	println(a(1.0))
+	println(a.derivative)
+	println(a.monic)
 
 	// import spire.syntax.literals._
 	// val a = Poly(r"2/1" -> 3, r"1/1" -> 2, r"4/1" -> 0)

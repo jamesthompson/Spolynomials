@@ -1,6 +1,6 @@
 package spolynomials
 
-import scala.reflect.ClassTag
+import scala.reflect._
 import spire.algebra._
 import spire.math._
 import spire.implicits._
@@ -14,6 +14,10 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 																				  ering: Ring[E],
 																				  cfield: Field[C],
 																				  conve: ConvertableFrom[E]) {
+
+	implicit def polyRing = new PolynomialRing[C, E] {
+    val ctc = classTag[C]
+  }
 
 	implicit object BigEndianPolyOrdering extends Order[Term[C, E]] {
 	  def compare(x:Term[C, E], y:Term[C, E]): Int = eord.compare(y.exp, x.exp)
@@ -60,7 +64,7 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 	
 	override def toString = {
 		QuickSort.sort(terms)
-		checkString(terms.mkString(""))
+		checkString(terms.mkString)
 	}
 
 	private def checkString(s: String) : String = 
