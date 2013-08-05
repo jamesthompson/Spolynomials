@@ -17,47 +17,48 @@ trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
   implicit val conve: ConvertableFrom[E] = ConvertableFrom[E]
   implicit val ctc: ClassTag[C]
 
-  implicit def termRing = new TermRing[C, E] {}
+  implicit def termRing: TermRing[C, E] = new TermRing[C, E] {}
 
   def zero = new Poly(Array(termRing.zero))
 
   def one = new Poly(Array(termRing.one))
 
-  def plus(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = zero
-  	// Poly((x.terms ++ y.terms).groupBy(_.index).values.toArray.map {
-  	// 	l => l.foldLeft(Term(F.zero, 0))(_ + _)
-  	// })
+  def negate(x: Poly[C, E]): Poly[C, E] =
+    new Poly(x.terms.map(_.unary_-))
 
-  def negate(x: Poly[C, E]): Poly[C, E] = zero
-  	// new Poly(x.terms.map(_.unary_-))
+  def clearZeroesPoly(x: Array[Term[C, E]]): Poly[C, E] =
+    new Poly(x.groupBy(_.exp).map({
+      case (e, l) => l.foldLeft(termRing.zero)(_ + _) }).toArray)
 
-  def times(x: Poly[C, E], y: Poly[C, E]) : Poly[C, E] = zero
-  // {
-  // 	val allTerms = x.terms.flatMap(xterm => y.terms.map(_ * xterm))
-  // 	new Poly(allTerms.groupBy(_.index).values.toArray.map {
-  // 		l => l.foldLeft(Term(F.zero, 0))(_ + _)
-  // 	})
-  // }
+  def plus(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
+    clearZeroesPoly(x.terms ++ y.terms)
+
+  def times(x: Poly[C, E], y: Poly[C, E]) : Poly[C, E] = 
+    clearZeroesPoly(x.terms.flatMap(xterm => y.terms.map(_ * xterm)))
 
   def quotMod(x: Poly[C, E], y: Poly[C, E]): (Poly[C, E], Poly[C, E]) = {
-    // require(!y.isZero, "Can't divide by polynomial of zero!")
+    require(!y.isZero, "Can't divide by polynomial of zero!")
     
-    // def zipSum(x: List[F], y: List[F]): Poly[F] = {
-    //   val (s, l) = if(x.length > y.length) (y, x) else (x, y)
-    //   val cs = s.zip(l).map(z => z._1 + z._2) ++ l.drop(s.length)
-    //   Poly.fromList(cs.zip(((cs.length - 1) to 0 by -1)).tail)
-    // }
+    def zipSum(x: Array[C], y: Array[C]): Poly[C, E] = {
+      val (s, l) = if(x.length > y.length) (y, x) else (x, y)
+      val cs = s.zip(l).map(z => z._1 + z._2) ++ l.drop(s.length)
+      new Poly(cs.zip(((cs.length - 1) to 0 by -1)).tail.map({
+        case (c, e) => Term(c, ering.fromInt(e))
+        }))
+    }
 
-    // def polyFromCoeffsLE(cs: List[F]): Poly[F] =
-    //   Poly.fromList(cs.zip((0 until cs.length)))
+    def polyFromCoeffsLE(cs: Array[C]): Poly[C, E] =
+      new Poly(cs.zip((0 until cs.length)).map({
+        case (c, e) => Term(c, ering.fromInt(e))
+        }))
     
-    // def eval(q: List[F], u: Poly[F], n: Int): (Poly[F], Poly[F]) = {
-    //   lazy val q0 = u.maxTerm.coeff / y.maxTerm.coeff
-    //   lazy val uprime = zipSum(u.coeffs, y.coeffs.map(_ * q0.unary_-))
-    //   if(u.isZero || n < 0) (polyFromCoeffsLE(q), u) else eval(q0 :: q, uprime, n - 1)
-    // }
+    def eval(q: List[C], u: Poly[C, E], n: Int): (Poly[C, E], Poly[C, E]) = {
+      lazy val q0 = u.maxOrderTermCoeff / y.maxOrderTermCoeff
+      lazy val uprime = zipSum(u.coeffs, y.coeffs.map(_ * q0.unary_-))
+      if(u.isZero || n < 0) (polyFromCoeffsLE(q.toArray), u) else eval(q0 :: q, uprime, n - 1)
+    }
     
-    // eval(Nil, x, x.degree - y.degree)
+    eval(Nil, x, conve.toInt(x.degree - y.degree))
     (zero, one)
   }
 

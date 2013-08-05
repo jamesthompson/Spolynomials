@@ -1,5 +1,6 @@
 package spolynomials
 
+import scala.reflect._
 import spire.algebra._
 import spire.math._
 import spire.implicits._
@@ -9,9 +10,20 @@ object BasicPolynomialTesting extends App {
 
 	println("\n\nCompilation successful...\n\n")
 
-	val a = new Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
+	val a: Poly[Double, Int] = new Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
+	val b: Poly[Double, Int] = new Poly(Array(Term(0.13, 1), Term(-0.25, 3), Term(0.11, 2)))
+
+	implicit def ring[C: ClassTag, E] = new PolynomialRing[C, E] {
+    val ctc = classTag[C]
+  }
 
 	println(a)
+	println(b)
+
+	val c = a + b
+
+	println(c)
+
 	println(a(1.0))
 	println(a.derivative)
 	println(a.monic)

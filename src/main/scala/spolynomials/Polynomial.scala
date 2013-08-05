@@ -23,13 +23,15 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 	  def compare(x:Term[C, E], y:Term[C, E]): Int = eord.compare(y.exp, x.exp)
 	}
 
-	lazy val coeffs: Array[C] = {
+	lazy val allTerms: Array[Term[C, E]] = {
 		QuickSort.sort(terms)
-		val cs = new Array[C](conve.toInt(ering.plus(maxOrder, ering.one)))
-		terms.foreach(t => cs(conve.toInt(t.exp)) = t.coeff)
-		for(i <- 0 to conve.toInt(maxOrder)) if(cs(i) == null) cs(i) = cring.zero
+		val cs = new Array[Term[C, E]](conve.toInt(ering.plus(maxOrder, ering.one)))
+		terms.foreach(t => cs(conve.toInt(t.exp)) = t)
+		for(i <- 0 to conve.toInt(maxOrder)) if(cs(i) == null) cs(i) = Term(cring.zero, ering.fromInt(i))
 		cs
 	}
+
+	lazy val coeffs: Array[C] = allTerms.map(_.coeff)
 
 	lazy val maxTerm: Term[C, E] = isZero match {
 		case true => Term(cring.zero, ering.zero)
@@ -73,20 +75,22 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 }
 
 // Companion object for Poly
-// object Poly {
+object Poly {
 
-// 	implicit def ring[F: Field] = new PolynomialRing[F] {
-//     val F = Field[F]
-//   }
+	// implicit def ring[C: Field: ClassTag, E: Ring] = new PolynomialRing[C, E] {
+ //    val ctc = classTag[C]
+ //  }
 
-// 	def apply[F: Field](terms: (F, Int)*): Poly[F] = {
-// 		val checkedTerms = terms.filter({case (c, i) => c != 0}).toArray
-// 		new Poly(checkedTerms.map({case (c,i) => Term(c, i)}))
-// 	}
+ //  implicit def tr[C: Field: ClassTag, E: Ring] = new TermRing[C, E] {}
 
-// 	def fromList[F: Field](terms: List[(F, Int)]): Poly[F] = {
-// 		val checkedTerms = terms.filter({case (c, i) => c != 0})
-// 		new Poly(checkedTerms.map({case (c,i) => Term(c, i)}).toArray)
-// 	}
+	// def apply[C, E](terms: (C, E)*): Poly[C, E] = {
+	// 	val cring = new Ring[C] {}
+	// 	val eqc = new Eq[C] {}
+	// 	val checkedTerms = terms.filter({case (c, i) => eqc.eqv(c, cring.zero)}).toArray
+	// 	new Poly(checkedTerms.map({case (c,i) => Term(c, i)}))
+	// }
 
-// }
+	// def fromArray[C, E](terms: Array[Term[C, E]]): Poly[C, E] =
+	// 	new Poly(terms.filterNot(_.isZero))
+
+}
