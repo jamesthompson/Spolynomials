@@ -43,13 +43,13 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 	def degree: E = 
 		if(terms.isEmpty) ering.zero else {
 			QuickSort.sort(terms)
-			terms.toList.find(_.coeff != cring.zero).getOrElse(Term(cring.zero, ering.zero)).exp
+			terms.find(_.coeff != cring.zero).getOrElse(Term(cring.zero, ering.zero)).exp
 		}
 	
 	def apply(x: C): C =
 		terms.map(_.eval(x)).foldLeft(cring.zero)(_ + _)
 
-	def isZero: Boolean = terms.toList.isEmpty
+	def isZero: Boolean = terms.isEmpty
 
 	def monic: Poly[C, E] = isZero match {
 		case true => this
@@ -57,7 +57,7 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 	}
 	
 	def derivative: Poly[C, E] = 
-		new Poly(terms.toList.filterNot(_.isIndexZero).map(_.der).toArray)
+		new Poly(terms.filterNot(_.isIndexZero).map(_.der))
 	
 	def integral: Poly[C, E] = 
 		new Poly(terms.map(_.int))
