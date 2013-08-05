@@ -14,12 +14,12 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
   	val F = Field[F]
   }
 
-  def zero = new Poly(Nil)
+  def zero = Poly.fromList(Nil)
 
-  def one = new Poly(List(Term(F.one, 0)))
+  def one = Poly(F.one -> 0)
 
   def plus(x: Poly[F], y: Poly[F]): Poly[F] =
-  	new Poly((x.terms ++ y.terms).groupBy(_.index).values.toList.map {
+  	Poly((x.terms ++ y.terms).groupBy(_.index).values.toArray.map {
   		l => l.foldLeft(Term(F.zero, 0))(_ + _)
   	})
 
@@ -28,7 +28,7 @@ trait PolynomialRing[F] extends EuclideanRing[Poly[F]] {
 
   def times(x: Poly[F], y: Poly[F]) : Poly[F] = {
   	val allTerms = x.terms.flatMap(xterm => y.terms.map(_ * xterm))
-  	new Poly(allTerms.groupBy(_.index).values.toList.map {
+  	new Poly(allTerms.groupBy(_.index).values.toArray.map {
   		l => l.foldLeft(Term(F.zero, 0))(_ + _)
   	})
   }

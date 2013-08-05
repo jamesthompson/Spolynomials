@@ -8,7 +8,7 @@ import spire.syntax._
 object BasicPolynomialTesting extends App {
 
 	import spire.syntax.literals._
-	val a = Poly(r"1/100" -> 3, r"1/20" -> 2, r"2/1" -> 1)
+	val a = Poly(r"2/1" -> 3, r"1/1" -> 2, r"4/1" -> 0)
 	val b = Poly(r"1/4" -> 3, r"1/10" -> 2, r"3/1" -> 1)
 
 	val aeval = a(r"2/1")
@@ -19,7 +19,7 @@ object BasicPolynomialTesting extends App {
 	println(s"a + b = ${a + b}")
 	println(s"a - b = ${a - b}")
 	println(s"a * b = ${a * b}")
-	// println(s"gcd(a,b) = ${gcd(a,b)}")
+	println(s"gcd(a,b) = ${gcd(a,b)}")
 	println(s"a % b = ${a % b}")
 	println(s"a /~ b = ${a /~ b}")
 	println(s"a /% b = ${a /% b}")
@@ -31,5 +31,7 @@ object BasicPolynomialTesting extends App {
 	println(s"b's integral ${b.integral}")
 	println(s"a evaluated with x = 2/1 = $aeval")
 	println(s"b evaluated with x = 1/2 = $beval")
+
+	println(s"${SpecialPolynomials.legendres(10)}")
 
 }
