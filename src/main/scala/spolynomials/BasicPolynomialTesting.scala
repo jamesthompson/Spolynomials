@@ -13,16 +13,10 @@ object BasicPolynomialTesting extends App {
 	val a: Poly[Double, Int] = new Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
 	val b: Poly[Double, Int] = new Poly(Array(Term(0.13, 1), Term(-0.25, 3), Term(0.11, 2)))
 
-	implicit def ring[C: ClassTag, E] = new PolynomialRing[C, E] {
-    val ctc = classTag[C]
-  }
-
 	println(a)
 	println(b)
 
-	val c = a + b
-
-	println(c)
+	// println(a.unary_-)
 
 	println(a(1.0))
 	println(a.derivative)

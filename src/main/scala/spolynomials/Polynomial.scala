@@ -12,16 +12,15 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 																  				eord: Order[E],
 																				  cring: Ring[C],
 																				  ering: Ring[E],
-																				  cfield: Field[C],
-																				  conve: ConvertableFrom[E]) {
-
-	implicit def polyRing = new PolynomialRing[C, E] {
-    val ctc = classTag[C]
-  }
+																				  // cfield: Field[C],
+																				  conve: ConvertableFrom[E],
+																				  termRing: TermRing[C, E]) {
 
 	implicit object BigEndianPolyOrdering extends Order[Term[C, E]] {
 	  def compare(x:Term[C, E], y:Term[C, E]): Int = eord.compare(y.exp, x.exp)
 	}
+
+	implicit def cfield: Field[C] = Field[C]
 
 	lazy val allTerms: Array[Term[C, E]] = {
 		QuickSort.sort(terms)
@@ -77,20 +76,16 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 // Companion object for Poly
 object Poly {
 
-	// implicit def ring[C: Field: ClassTag, E: Ring] = new PolynomialRing[C, E] {
- //    val ctc = classTag[C]
- //  }
+	implicit def ord[X]: Order[X] = Order[X]
+	implicit def ring[X]: Ring[X] = Ring[X]
+	implicit def conv[X]: ConvertableFrom[X] = ConvertableFrom[X]
+	implicit def termRing[C, E]: TermRing[C, E] = new TermRing[C, E] {}
+	implicit def polyRing[C: ClassTag, E] = new PolynomialRing[C, E] {
+	  val ctc: ClassTag[C] = classTag[C]
+	  val termRing = new TermRing[C, E] {}
+  }
 
- //  implicit def tr[C: Field: ClassTag, E: Ring] = new TermRing[C, E] {}
-
-	// def apply[C, E](terms: (C, E)*): Poly[C, E] = {
-	// 	val cring = new Ring[C] {}
-	// 	val eqc = new Eq[C] {}
-	// 	val checkedTerms = terms.filter({case (c, i) => eqc.eqv(c, cring.zero)}).toArray
-	// 	new Poly(checkedTerms.map({case (c,i) => Term(c, i)}))
-	// }
-
-	// def fromArray[C, E](terms: Array[Term[C, E]]): Poly[C, E] =
-	// 	new Poly(terms.filterNot(_.isZero))
-
+  // def apply[C: ClassTag, E](terms: Array[Term[C, E]]): Poly[C, E] =
+  // 	new Poly(terms)
+ 
 }

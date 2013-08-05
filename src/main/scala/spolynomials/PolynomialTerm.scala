@@ -51,11 +51,11 @@ case class Term[C, E](val coeff: C, val exp: E)
 // Univariate polynomial terms form a ring
 trait TermRing[C, E] extends Ring[Term[C, E]] {
 
-  implicit val cord: Order[C] = Order[C]
-  implicit val eord: Order[E] = Order[E]
-  implicit val cring: Ring[C] = Ring[C]
-  implicit val ering: Ring[E] = Ring[E]
-  implicit val conve: ConvertableFrom[E] = ConvertableFrom[E]
+	implicit val cord: Order[C] = Order[C]
+	implicit val eord: Order[E] = Order[E]
+	implicit val cring: Ring[C] = Ring[C]
+	implicit val ering: Ring[E] = Ring[E]
+	implicit val conve: ConvertableFrom[E] = ConvertableFrom[E]
 
 	def negate(t: Term[C, E]): Term[C, E] = 
 		Term(cring.negate(t.coeff), t.exp)
@@ -70,4 +70,4 @@ trait TermRing[C, E] extends Ring[Term[C, E]] {
 	def times(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
 		Term(cring.times(x.coeff, y.coeff), ering.plus(x.exp, y.exp))
 
-}
+	}

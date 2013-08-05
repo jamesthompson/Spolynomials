@@ -13,11 +13,10 @@ trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
   implicit val eord: Order[E] = Order[E]
   implicit val cring: Ring[C] = Ring[C]
   implicit val ering: Ring[E] = Ring[E]
-  implicit val cfield: Field[C] = Field[C]
   implicit val conve: ConvertableFrom[E] = ConvertableFrom[E]
-  implicit val ctc: ClassTag[C]
-
-  implicit def termRing: TermRing[C, E] = new TermRing[C, E] {}
+  implicit val cfield: Field[C] = Field[C]
+  implicit def ctc: ClassTag[C]
+  implicit def termRing: TermRing[C, E]
 
   def zero = new Poly(Array(termRing.zero))
 
