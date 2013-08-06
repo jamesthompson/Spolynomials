@@ -10,17 +10,17 @@ object BasicPolynomialTesting extends App {
 
 	println("\n\nCompilation successful...\n\n")
 
-	val a: Poly[Double, Int] = Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
-	val b: Poly[Double, Int] = Poly(Array(Term(0.13, 1), Term(-0.25, 3), Term(0.11, 2)))
+	val a: Poly[Double, Int] = new Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
+	val b: Poly[Double, Int] = new Poly(Array(Term(0.13, 1), Term(-0.25, 3), Term(0.11, 2)))
 
-	println(a)
-	println(b)
+	println(a.show)
+	println(b.show)
 
 	// println(a.unary_-)
 
 	println(a(1.0))
-	println(a.derivative)
-	println(a.monic)
+	println(a.derivative.show)
+	println(a.monic.show)
 
 	// import spire.syntax.literals._
 	// val a = Poly(r"2/1" -> 3, r"1/1" -> 2, r"4/1" -> 0)

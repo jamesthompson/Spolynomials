@@ -7,11 +7,8 @@ import spire.implicits._
 import spire.syntax._
 
 // Univariate polynomial class
-final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) {
-
-	implicit def eord: Order[E] = Order[E]
-
-	implicit def tR: TermRing[C, E] = new TermRing[C, E] {} // PROBLEM HERE...
+class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
+													(implicit eord: Order[E]) {
 
 	implicit object BigEndianPolyOrdering extends Order[Term[C, E]] {
 	  def compare(x:Term[C, E], y:Term[C, E]): Int = eord.compare(y.exp, x.exp)
@@ -73,17 +70,15 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) {
 												conve: ConvertableFrom[E]): Poly[C, E] = 
 		new Poly(terms.map(_.int))
 	
-	override def toString = {
-		implicit def eord: Order[C] = Order[C]
-		implicit def cring: Ring[C] = Ring[C]
+	def show(implicit cord: Order[C],
+										cring: Ring[C]) : String = {
 		QuickSort.sort(terms)
-		checkString(terms.map(_.termString).mkString)
+		val s = terms.map(_.termString).mkString
+		if(s.take(3) == " - ") "-" + s.drop(3) else s.drop(3)
 	}
 
-	private def checkString(s: String) : String = 
-		if(s.take(3) == " - ") "-" + s.drop(3) else s.drop(3)
-
 }
+
 
 // Companion object for Poly
 object Poly {
