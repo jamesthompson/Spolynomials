@@ -13,6 +13,9 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) extends PolyImpli
 final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) {
 
 	implicit def eord: Order[E] = Order[E] 
+<<<<<<< HEAD
+>>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
+=======
 >>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
 
 	implicit object BigEndianPolyOrdering extends Order[Term[C, E]] {
@@ -87,6 +90,7 @@ trait PolyImplicits {
 trait PolyRings {
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	implicit def tR[C: Ring, E: Ring]: TermRing[C, E] = new TermRing[C, E] {
 		val cring = Ring[C]
 		val ering = Ring[E]
@@ -108,6 +112,18 @@ trait PolyRings {
 		val conve = ConvertableFrom[E]
 		val cfield = Field[C]
 	}
+=======
+	implicit object tR extends TermRing[C, E] {}
+
+	// implicit def ord[X]: Order[X] = Order[X]
+	// implicit def ring[X]: Ring[X] = Ring[X]
+	// implicit def conv[X]: ConvertableFrom[X] = ConvertableFrom[X]
+	// implicit def termRing[C, E]: TermRing[C, E] = new TermRing[C, E] {}
+	// implicit def polyRing[C: ClassTag, E] = new PolynomialRing[C, E] {
+	//   val ctc: ClassTag[C] = classTag[C]
+	//   val termRing = new TermRing[C, E] {}
+ //  }
+>>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
 
 }
 
