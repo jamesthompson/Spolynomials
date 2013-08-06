@@ -1,48 +1,15 @@
 [debug] 
 [debug] Initial source changes: 
-[debug] 	removed:Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialTerm.scala)
+[debug] 	removed:Set()
 [debug] 	added: Set()
-[debug] 	modified: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala)
-[debug] Removed products: Set(/Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/BasicPolynomialTesting.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Term.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$coeffs$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$allTerms$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$derivative$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/BasicPolynomialTesting$delayedInit$body.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$BigEndianPolyOrdering$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$apply$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$apply$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/BasicPolynomialTesting$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$integral$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$monic$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$allTerms$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$derivative$2.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Term$.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$degree$1.class, /Users/James/Desktop/Spolynomials/target/scala-2.10/classes/spolynomials/Poly$$anonfun$degree$2.class)
+[debug] 	modified: Set()
+[debug] Removed products: Set()
 [debug] Modified external sources: Set()
 [debug] Modified binary dependencies: Set()
-[debug] Initial directly invalidated sources: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialTerm.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/BasicPolynomialTesting.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala)
+[debug] Initial directly invalidated sources: Set()
 [debug] 
 [debug] Sources indirectly invalidated by:
-[debug] 	product: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/BasicPolynomialTesting.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialTerm.scala)
+[debug] 	product: Set()
 [debug] 	binary dep: Set()
 [debug] 	external source: Set()
-[debug] Initially invalidated: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialTerm.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/BasicPolynomialTesting.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala)
-[info] Compiling 3 Scala sources to /Users/James/Desktop/Spolynomials/target/scala-2.10/classes...
-[debug] Running cached compiler 2fe257f3, interfacing (CompilerInterface) with Scala compiler version 2.10.2
-[debug] Calling Scala compiler with arguments  (CompilerInterface):
-[debug] 	-d
-[debug] 	/Users/James/Desktop/Spolynomials/target/scala-2.10/classes
-[debug] 	-bootclasspath
-[debug] 	/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/classes:/Users/James/.sbt/boot/scala-2.10.2/lib/scala-library.jar
-[debug] 	-classpath
-[debug] 	/Users/James/Desktop/Spolynomials/target/scala-2.10/classes:/Users/James/.ivy2/cache/org.spire-math/spire_2.10/jars/spire_2.10-0.5.0.jar:/Users/James/.ivy2/cache/org.spire-math/macros_2.10/jars/macros_2.10-0.5.0.jar:/Users/James/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.2.jar
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:137: not found: value classTag
-[error] 		implicit val ctc = classTag[C]
-[error] 		                   ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:143: could not find implicit value for parameter f: spire.algebra.Field[C]
-[error] 		implicit val cfield = Field[C]
-[error] 		                           ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:142: could not find implicit value for parameter ev: spire.math.ConvertableFrom[E]
-[error] 		implicit val conve = ConvertableFrom[E]
-[error] 		                                    ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:141: could not find implicit value for parameter o: spire.algebra.Order[E]
-[error] 		implicit val eord = Order[E]
-[error] 		                         ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:140: could not find implicit value for parameter o: spire.algebra.Order[C]
-[error] 		implicit val cord = Order[C]
-[error] 		                         ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:139: could not find implicit value for parameter r: spire.algebra.Ring[E]
-[error] 		implicit val ering = Ring[E]
-[error] 		                         ^
-[error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:138: recursive value cring needs type
-[error] 		implicit val cring = Ring[C]
-[error] 		                         ^
-[error] 7 errors found
-[debug] Compilation failed (CompilerInterface)
-[error] (compile:compile) Compilation failed
+[debug] Initially invalidated: Set()

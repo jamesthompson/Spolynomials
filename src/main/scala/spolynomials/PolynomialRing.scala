@@ -19,13 +19,13 @@ trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
   implicit def cfield: Field[C]
 
   implicit def tR: Ring[Term[C, E]] = new Ring[Term[C, E]] {
-    def negate(t: Term[C, E]): Term[C, E] = Term(cring.negate(t.coeff), t.exp)
+    def negate(t: Term[C, E]): Term[C, E] = Term(t.coeff.unary_-, t.exp)
     def zero: Term[C, E] = Term(cring.zero, ering.zero)
     def one: Term[C, E] = Term(cring.one, ering.zero)
     def plus(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
-      Term(cring.plus(x.coeff, y.coeff), y.exp)
+      Term(x.coeff + y.coeff, y.exp)
     def times(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
-      Term(cring.times(x.coeff, y.coeff), ering.plus(x.exp, y.exp))
+      Term(x.coeff * y.coeff, x.exp + y.exp)
   }
 
   def zero = new Poly(Array(tR.zero))
@@ -33,25 +33,25 @@ trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
   def one = new Poly(Array(tR.one))
 
   def negate(x: Poly[C, E]): Poly[C, E] =
-    new Poly(x.terms.map(tR.negate))
+    new Poly(x.terms.map(_.unary_-))
 
   def clearZeroesPoly(x: Array[Term[C, E]]): Poly[C, E] =
     new Poly(x.groupBy(_.exp).map({
-      case (e, l) => l.foldLeft(tR.zero)(tR.plus(_, _))}).toArray)
+      case (e, l) => l.foldLeft(tR.zero)(_ + _)}).toArray)
 
   def plus(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
     clearZeroesPoly(x.terms ++ y.terms)
 
   def times(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
     clearZeroesPoly(x.terms.flatMap { 
-      xterm => y.terms.map(yterm => tR.times(yterm, xterm)) })
+      xterm => y.terms.map(yterm => yterm * xterm) })
 
   def quotMod(x: Poly[C, E], y: Poly[C, E]): (Poly[C, E], Poly[C, E]) = {
     require(!y.isZero, "Can't divide by polynomial of zero!")
     
     def zipSum(x: Array[C], y: Array[C]): Poly[C, E] = {
       val (s, l) = if(x.length > y.length) (y, x) else (x, y)
-      val cs = s.zip(l).map(z => cfield.plus(z._1, z._2)) ++ l.drop(s.length)
+      val cs = s.zip(l).map(z => z._1 + z._2) ++ l.drop(s.length)
       new Poly(cs.zip(((cs.length - 1) to 0 by -1)).tail.map({
         case (c, e) => Term(c, ering.fromInt(e))
         }))
@@ -63,12 +63,12 @@ trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
         }))
     
     def eval(q: List[C], u: Poly[C, E], n: Int): (Poly[C, E], Poly[C, E]) = {
-      lazy val q0 = cfield.div(u.maxOrderTermCoeff, y.maxOrderTermCoeff)
-      lazy val uprime = zipSum(u.coeffs, y.coeffs.map(yc => cfield.times(yc, cfield.negate(q0))))
+      lazy val q0 = u.maxOrderTermCoeff / y.maxOrderTermCoeff
+      lazy val uprime = zipSum(u.coeffs, y.coeffs.map(yc => yc * q0.unary_-))
       if(u.isZero || n < 0) (polyFromCoeffsLE(q.toArray), u) else eval(q0 :: q, uprime, n - 1)
     }
     
-    eval(Nil, x, conve.toInt(ering.minus(x.degree, y.degree)))
+    eval(Nil, x, conve.toInt(x.degree - y.degree))
     (zero, one)
   }
 

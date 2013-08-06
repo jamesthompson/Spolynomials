@@ -78,7 +78,7 @@ class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 	def coeffs(implicit conv: ConvertableFrom[E],
 											cring: Ring[C],
 											ering: Ring[E]): Array[C] = 
-		allTerms.map(_.coeff)
+		allTerms.map(_.coeff).toArray
 
 	def maxTerm(implicit cring: Ring[C],
 											 ering: Ring[E]): Term[C, E] = {
@@ -133,14 +133,16 @@ class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 // Companion object for Poly
 object Poly {
 
-	implicit def PR[C: ClassTag, E]: PolynomialRing[C, E] = new PolynomialRing[C, E] {
-		implicit val ctc = classTag[C]
-		implicit val cring = Ring[C]
-		implicit val ering = Ring[E]
-		implicit val cord = Order[C]
-		implicit val eord = Order[E]
-		implicit val conve = ConvertableFrom[E]
-		implicit val cfield = Field[C]
-	}
+	// implicit def PR[C: ClassTag: Field: Order, E: ConvertableFrom: Order: Ring]: PolynomialRing[C, E] = new PolynomialRing[C, E] {
+	// 	implicit val ctc = classTag[C]
+	// 	implicit val cring = Ring[C]
+	// 	implicit val ering = Ring[E]
+	// 	implicit val cord = Order[C]
+	// 	implicit val eord = Order[E]
+	// 	implicit val conve = ConvertableFrom[E]
+	// 	implicit val cfield = Field[C]
+	// }
+
+	// def apply[C: ClassTag, E](terms: Array[Term[C, E]]): Poly[C, E] = new Poly(terms)
 
 }
