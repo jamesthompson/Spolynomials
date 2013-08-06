@@ -42,6 +42,7 @@ case class Term[C, E](val coeff: C, val exp: E) extends PolyImplicits {
 
 }
 
+
 // Univariate polynomial terms form a ring
 trait TermRing[C, E] extends Ring[Term[C, E]] with PolyImplicits {
 
@@ -60,4 +61,4 @@ trait TermRing[C, E] extends Ring[Term[C, E]] with PolyImplicits {
 	def times(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
 		Term(cring.times(x.coeff, y.coeff), ering.plus(x.exp, y.exp))
 
-	}
+}
