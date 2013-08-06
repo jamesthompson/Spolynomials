@@ -1,19 +1,25 @@
 package spolynomials
 
-import scala.reflect._
+import scala.reflect.ClassTag
 import spire.algebra._
 import spire.math._
 import spire.implicits._
 import spire.syntax._
 
 // Univariate polynomial class
-final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) extends PolyImplicits {
+final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) {
+
+	implicit def eord: Order[E] = Order[E]
+
+	implicit def tR: TermRing[C, E] = new TermRing[C, E] {} // PROBLEM HERE...
 
 	implicit object BigEndianPolyOrdering extends Order[Term[C, E]] {
 	  def compare(x:Term[C, E], y:Term[C, E]): Int = eord.compare(y.exp, x.exp)
 	}
 
-	lazy val allTerms: Array[Term[C, E]] = {
+	def allTerms(implicit conve: ConvertableFrom[E],
+												cring: Ring[C],
+												ering: Ring[E]): Array[Term[C, E]] = {
 		QuickSort.sort(terms)
 		val cs = new Array[Term[C, E]](conve.toInt(ering.plus(maxOrder, ering.one)))
 		terms.foreach(t => cs(conve.toInt(t.exp)) = t)
@@ -22,35 +28,49 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) extends PolyImpli
 		cs
 	}
 
-	lazy val coeffs: Array[C] = allTerms.map(_.coeff)
+	def coeffs(implicit conv: ConvertableFrom[E],
+											cring: Ring[C],
+											ering: Ring[E]): Array[C] = 
+		allTerms.map(_.coeff)
 
-	lazy val maxTerm: Term[C, E] = {
+	def maxTerm(implicit cring: Ring[C],
+											 ering: Ring[E]): Term[C, E] = {
 		if(isZero) Term(cring.zero, ering.zero) else QuickSort.sort(terms); 
 		terms(0)
 	}
 
-	lazy val maxOrder: E = maxTerm.exp
+	def maxOrder(implicit cring: Ring[C],
+												ering: Ring[E]): E = maxTerm.exp
 
-	lazy val maxOrderTermCoeff: C = maxTerm.coeff
+	def maxOrderTermCoeff(implicit cring: Ring[C],
+												ering: Ring[E]): C = maxTerm.coeff
 
-	lazy val degree: E = 
+	def degree(implicit cring: Ring[C],
+											ering: Ring[E],
+											conve: ConvertableFrom[E]): E = 
 		if(terms.isEmpty) ering.zero else {
 			QuickSort.sort(terms)
 			terms.find(_.coeff != cring.zero).getOrElse(Term(cring.zero, ering.zero)).exp
 		}
 	
-	def apply(x: C): C =
+	def apply(x: C)(implicit cring: Ring[C],
+													 conve: ConvertableFrom[E]): C =
 		terms.map(_.eval(x)).foldLeft(cring.zero)(_ + _)
 
 	def isZero: Boolean = terms.isEmpty
 
-	def monic: Poly[C, E] = 
+	def monic(implicit cfield: Field[C],
+										 ering: Ring[E]): Poly[C, E] = 
 	 if(isZero) this else new Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
 	
-	def derivative: Poly[C, E] = 
+	def derivative(implicit cring: Ring[C],
+													ering: Ring[E],
+													conve: ConvertableFrom[E]): Poly[C, E] = 
 		new Poly(terms.filterNot(_.isIndexZero).map(_.der))
 	
-	def integral: Poly[C, E] = 
+	def integral(implicit cfield: Field[C],
+												ering: Ring[E],
+												conve: ConvertableFrom[E]): Poly[C, E] = 
 		new Poly(terms.map(_.int))
 	
 	override def toString = {
@@ -65,49 +85,11 @@ final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) extends PolyImpli
 
 }
 
-trait PolyImplicits {
-
-	implicit def ctc: ClassTag[C]
-  implicit def cring: Ring[C]
-  implicit def ering: Ring[E]
-  implicit def cord: Order[C]
-  implicit def eord: Order[E]
-  implicit def conve: ConvertableFrom[E]
-  implicit def cfield: Field[C]
-
-}
-
-
-trait PolyRings {
-
-	implicit def tR[C: Ring, E: Ring]: TermRing[C, E] = new TermRing[C, E] {
-		val cring = Ring[C]
-		val ering = Ring[E]
-		val cord = Order[C]
-	}
-
-	implicit def polyRing[C: Field: ClassTag, E: Ring: ConvertableFrom]: PolynomialRing[C, E] = new PolynomialRing[C, E] {
-		val tR = new TermRing[C, E] {
-			val cring = Ring[C]
-			val ering = Ring[E]
-			val cord = Order[C]
-		}
-		val ctc = classTag[C]
-		val cring = Ring[C]
-		val ering = Ring[E]
-		val cord = Order[C]
-		val eord = Order[E]
-
-		val conve = ConvertableFrom[E]
-		val cfield = Field[C]
-	}
-
-}
-
 // Companion object for Poly
-object Poly extends PolyRings {
+object Poly {
 
-  def apply[C: Field: ClassTag, E: Ring: ConvertableFrom](terms: Array[Term[C, E]]): Poly[C, E] =
-  	new Poly(terms)
+
+ //  def apply[C: ClassTag, E](terms: Array[Term[C, E]]): Poly[C, E] =
+ //  	new Poly(terms)
  
 }
