@@ -15,7 +15,11 @@
 [debug] Initially invalidated: Set(/Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialTerm.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala, /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/PolynomialRing.scala)
 [info] Compiling 3 Scala sources to /Users/James/Desktop/Spolynomials/target/scala-2.10/classes...
 <<<<<<< HEAD
+<<<<<<< HEAD
 [debug] Running cached compiler 4c733170, interfacing (CompilerInterface) with Scala compiler version 2.10.2
+=======
+[debug] Running cached compiler 69fcccda, interfacing (CompilerInterface) with Scala compiler version 2.10.2
+>>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
 =======
 [debug] Running cached compiler 69fcccda, interfacing (CompilerInterface) with Scala compiler version 2.10.2
 >>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
@@ -26,6 +30,7 @@
 [debug] 	/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/jre/classes:/Users/James/.sbt/boot/scala-2.10.2/lib/scala-library.jar
 [debug] 	-classpath
 [debug] 	/Users/James/Desktop/Spolynomials/target/scala-2.10/classes:/Users/James/.ivy2/cache/org.spire-math/spire_2.10/jars/spire_2.10-0.5.0.jar:/Users/James/.ivy2/cache/org.spire-math/macros_2.10/jars/macros_2.10-0.5.0.jar:/Users/James/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.10.2.jar
+<<<<<<< HEAD
 <<<<<<< HEAD
 [error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:63: ambiguous implicit values:
 [error]  both value cord in class Poly of type spire.algebra.Order[C]
@@ -65,6 +70,8 @@
 [error] 		    ^
 [error] 11 errors found
 =======
+=======
+>>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
 [error] /Users/James/Desktop/Spolynomials/src/main/scala/spolynomials/Polynomial.scala:89: not found: type C
 [error] 	implicit object tR extends TermRing[C, E] {}
 [error] 	                                    ^
@@ -72,6 +79,9 @@
 [error] 	implicit object tR extends TermRing[C, E] {}
 [error] 	                                       ^
 [error] two errors found
+<<<<<<< HEAD
+>>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
+=======
 >>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
 [debug] Compilation failed (CompilerInterface)
 [error] (compile:compile) Compilation failed
