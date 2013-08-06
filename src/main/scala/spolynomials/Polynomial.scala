@@ -133,7 +133,7 @@ class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 // Companion object for Poly
 object Poly {
 
-	// implicit def PR[C: ClassTag: Field: Order, E: ConvertableFrom: Order: Ring]: PolynomialRing[C, E] = new PolynomialRing[C, E] {
+	// implicit def PR[C: ClassTag, E]: PolynomialRing[C, E] = new PolynomialRing[C, E] {
 	// 	implicit val ctc = classTag[C]
 	// 	implicit val cring = Ring[C]
 	// 	implicit val ering = Ring[E]
@@ -143,6 +143,6 @@ object Poly {
 	// 	implicit val cfield = Field[C]
 	// }
 
-	// def apply[C: ClassTag, E](terms: Array[Term[C, E]]): Poly[C, E] = new Poly(terms)
+	def apply[C: ClassTag, E: Order](terms: Array[Term[C, E]]): Poly[C, E] = new Poly(terms)
 
 }

@@ -10,8 +10,8 @@ object BasicPolynomialTesting extends App {
 
 	println("\n\nCompilation successful...\n\n")
 
-	val a: Poly[Double, Int] = new Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
-	val b: Poly[Double, Int] = new Poly(Array(Term(0.13, 1), Term(-0.25, 3), Term(0.11, 2)))
+	val a: Poly[Double, Int] = Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))
+	val b: Poly[Double, Int] = Poly(Array(Term(0.13, 1), Term(-0.25, 3), Term(0.11, 2)))
 
 	println(a.show)
 	println(b.show)
