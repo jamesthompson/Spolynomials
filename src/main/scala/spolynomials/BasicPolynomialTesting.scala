@@ -8,8 +8,6 @@ import spire.syntax._
 
 object BasicPolynomialTesting extends App {
 
-	
-
 	println("\n\nCompilation successful...\n\n")
 
 	val a: Poly[Double, Int] = Poly(Array(Term(-0.23, 1), Term(-0.45, 3), Term(0.31, 2)))

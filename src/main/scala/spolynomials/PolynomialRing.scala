@@ -10,33 +10,44 @@ import spire.syntax._
 trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
 
   implicit def ctc: ClassTag[C]
-  implicit def cring: Ring[C]
-  implicit def ering: Ring[E]
-  implicit def cord: Order[C]
-  implicit def eord: Order[E]
-  implicit def conve: ConvertableFrom[E]
-  implicit def cfield: Field[C]
-  implicit def tR: TermRing[C, E]
 
-  def zero = new Poly(Array(tR.zero))
+  def zero(implicit tR: TermRing[C, E],
+                    cring: Ring[C],
+                    ering: Ring[E]) = new Poly(Array(tR.zero))
 
-  def one = new Poly(Array(tR.one))
+  def one(implicit tR: TermRing[C, E],
+                   cring: Ring[C],
+                   ering: Ring[E]) = new Poly(Array(tR.one))
 
-  def negate(x: Poly[C, E]): Poly[C, E] =
+  def negate(x: Poly[C, E])(implicit tR: TermRing[C, E],
+                                     cring: Ring[C]): Poly[C, E] =
     new Poly(x.terms.map(tR.negate))
 
-  def clearZeroesPoly(x: Array[Term[C, E]]): Poly[C, E] =
+  def clearZeroesPoly(x: Array[Term[C, E]])
+                     (implicit tR: TermRing[C, E],
+                               cring: Ring[C],
+                               ering: Ring[E]): Poly[C, E] =
     new Poly(x.groupBy(_.exp).map({
       case (e, l) => l.foldLeft(tR.zero)(tR.plus(_, _))}).toArray)
 
-  def plus(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
+  def plus(x: Poly[C, E], y: Poly[C, E])
+          (implicit tR: TermRing[C, E],
+                    cring: Ring[C],
+                    ering: Ring[E]): Poly[C, E] = 
     clearZeroesPoly(x.terms ++ y.terms)
 
-  def times(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
+  def times(x: Poly[C, E], y: Poly[C, E])
+           (implicit tR: TermRing[C, E],
+                     cring: Ring[C],
+                     ering: Ring[E]) : Poly[C, E] = 
     clearZeroesPoly(x.terms.flatMap { 
       xterm => y.terms.map(yterm => tR.times(yterm, xterm)) })
 
-  def quotMod(x: Poly[C, E], y: Poly[C, E]): (Poly[C, E], Poly[C, E]) = {
+  def quotMod(x: Poly[C, E], y: Poly[C, E])
+             (implicit tR: TermRing[C, E],
+                       cfield: Field[C],
+                       ering: Ring[E],
+                       conve: ConvertableFrom[E]): (Poly[C, E], Poly[C, E]) = {
     require(!y.isZero, "Can't divide by polynomial of zero!")
     
     def zipSum(x: Array[C], y: Array[C]): Poly[C, E] = {
@@ -62,35 +73,24 @@ trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
     (zero, one)
   }
 
-  def quot(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] =  quotMod(x, y)._1
+  def quot(x: Poly[C, E], y: Poly[C, E])
+          (implicit tR: TermRing[C, E],
+                    cfield: Field[C],
+                    ering: Ring[E],
+                    conve: ConvertableFrom[E]): Poly[C, E] =  quotMod(x, y)._1
   
-  def mod(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] =  quotMod(x, y)._2
+  def mod(x: Poly[C, E], y: Poly[C, E])
+         (implicit tR: TermRing[C, E],
+                   cfield: Field[C],
+                   ering: Ring[E],
+                   conve: ConvertableFrom[E]): Poly[C, E] =  quotMod(x, y)._2
 
-  def gcd(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
-    if(y.isZero && x.isZero) zero else if(y.isZero) x.monic
+  def gcd(x: Poly[C, E], y: Poly[C, E])
+         (implicit tR: TermRing[C, E],
+                   cfield: Field[C],
+                   ering: Ring[E],
+                   conve: ConvertableFrom[E]): Poly[C, E] = 
+  	if(y.isZero && x.isZero) zero else if(y.isZero) x.monic
       else gcd(y, mod(x, y))
-
-}
-
-// Univariate polynomial terms form a ring
-trait TermRing[C, E] extends Ring[Term[C, E]] {
-
-  implicit def cring: Ring[C]
-  implicit def ering: Ring[E]
-
-  def negate(t: Term[C, E]): Term[C, E] = 
-    Term(cring.negate(t.coeff), t.exp)
-
-  def zero: Term[C, E] = 
-    Term(cring.zero, ering.zero)
-
-  def one: Term[C, E] = 
-    Term(cring.one, ering.zero)
-
-  def plus(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
-    Term(cring.plus(x.coeff, y.coeff), y.exp)
-
-  def times(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
-    Term(cring.times(x.coeff, y.coeff), ering.plus(x.exp, y.exp))
 
 }
