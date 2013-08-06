@@ -60,8 +60,4 @@ trait TermRing[C, E] extends Ring[Term[C, E]] with PolyImplicits {
 	def times(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
 		Term(cring.times(x.coeff, y.coeff), ering.plus(x.exp, y.exp))
 
-<<<<<<< HEAD
 	}
-=======
-	}
->>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
