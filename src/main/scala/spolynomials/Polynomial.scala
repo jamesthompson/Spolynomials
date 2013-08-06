@@ -7,13 +7,7 @@ import spire.implicits._
 import spire.syntax._
 
 // Univariate polynomial class
-<<<<<<< HEAD
 final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) extends PolyImplicits {
-=======
-final class Poly[C: ClassTag, E](val terms: Array[Term[C, E]]) {
-
-	implicit def eord: Order[E] = Order[E] 
->>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
 
 	implicit object BigEndianPolyOrdering extends Order[Term[C, E]] {
 	  def compare(x:Term[C, E], y:Term[C, E]): Int = eord.compare(y.exp, x.exp)
@@ -86,7 +80,6 @@ trait PolyImplicits {
 
 trait PolyRings {
 
-<<<<<<< HEAD
 	implicit def tR[C: Ring, E: Ring]: TermRing[C, E] = new TermRing[C, E] {
 		val cring = Ring[C]
 		val ering = Ring[E]
@@ -113,18 +106,6 @@ trait PolyRings {
 
 // Companion object for Poly
 object Poly extends PolyRings {
-=======
-	implicit object tR extends TermRing[C, E] {}
-
-	// implicit def ord[X]: Order[X] = Order[X]
-	// implicit def ring[X]: Ring[X] = Ring[X]
-	// implicit def conv[X]: ConvertableFrom[X] = ConvertableFrom[X]
-	// implicit def termRing[C, E]: TermRing[C, E] = new TermRing[C, E] {}
-	// implicit def polyRing[C: ClassTag, E] = new PolynomialRing[C, E] {
-	//   val ctc: ClassTag[C] = classTag[C]
-	//   val termRing = new TermRing[C, E] {}
- //  }
->>>>>>> parent of a085e51... Issues with implicit resolution from Interval-like approach
 
   def apply[C: Field: ClassTag, E: Ring: ConvertableFrom](terms: Array[Term[C, E]]): Poly[C, E] =
   	new Poly(terms)
