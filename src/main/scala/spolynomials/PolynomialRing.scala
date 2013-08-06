@@ -1,5 +1,6 @@
 package spolynomials
 
+import scala.annotation.tailrec
 import scala.reflect.ClassTag
 import spire.algebra._
 import spire.math._
@@ -7,47 +8,29 @@ import spire.implicits._
 import spire.syntax._
 
 // Univariate polynomials form a Euclidean Ring
-trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
+trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] with PolyImplicits{
 
-  implicit def ctc: ClassTag[C]
+  implicit def tR: TermRing[C, E]
 
-  def zero(implicit tR: TermRing[C, E],
-                    cring: Ring[C],
-                    ering: Ring[E]) = new Poly(Array(tR.zero))
+  def zero = new Poly(Array(tR.zero))
 
-  def one(implicit tR: TermRing[C, E],
-                   cring: Ring[C],
-                   ering: Ring[E]) = new Poly(Array(tR.one))
+  def one = new Poly(Array(tR.one))
 
-  def negate(x: Poly[C, E])(implicit tR: TermRing[C, E],
-                                     cring: Ring[C]): Poly[C, E] =
+  def negate(x: Poly[C, E]): Poly[C, E] =
     new Poly(x.terms.map(tR.negate))
 
-  def clearZeroesPoly(x: Array[Term[C, E]])
-                     (implicit tR: TermRing[C, E],
-                               cring: Ring[C],
-                               ering: Ring[E]): Poly[C, E] =
+  def clearZeroesPoly(x: Array[Term[C, E]]): Poly[C, E] =
     new Poly(x.groupBy(_.exp).map({
       case (e, l) => l.foldLeft(tR.zero)(tR.plus(_, _))}).toArray)
 
-  def plus(x: Poly[C, E], y: Poly[C, E])
-          (implicit tR: TermRing[C, E],
-                    cring: Ring[C],
-                    ering: Ring[E]): Poly[C, E] = 
+  def plus(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
     clearZeroesPoly(x.terms ++ y.terms)
 
-  def times(x: Poly[C, E], y: Poly[C, E])
-           (implicit tR: TermRing[C, E],
-                     cring: Ring[C],
-                     ering: Ring[E]) : Poly[C, E] = 
+  def times(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
     clearZeroesPoly(x.terms.flatMap { 
       xterm => y.terms.map(yterm => tR.times(yterm, xterm)) })
 
-  def quotMod(x: Poly[C, E], y: Poly[C, E])
-             (implicit tR: TermRing[C, E],
-                       cfield: Field[C],
-                       ering: Ring[E],
-                       conve: ConvertableFrom[E]): (Poly[C, E], Poly[C, E]) = {
+  def quotMod(x: Poly[C, E], y: Poly[C, E]): (Poly[C, E], Poly[C, E]) = {
     require(!y.isZero, "Can't divide by polynomial of zero!")
     
     def zipSum(x: Array[C], y: Array[C]): Poly[C, E] = {
@@ -73,23 +56,11 @@ trait PolynomialRing[C, E] extends EuclideanRing[Poly[C, E]] {
     (zero, one)
   }
 
-  def quot(x: Poly[C, E], y: Poly[C, E])
-          (implicit tR: TermRing[C, E],
-                    cfield: Field[C],
-                    ering: Ring[E],
-                    conve: ConvertableFrom[E]): Poly[C, E] =  quotMod(x, y)._1
+  def quot(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] =  quotMod(x, y)._1
   
-  def mod(x: Poly[C, E], y: Poly[C, E])
-         (implicit tR: TermRing[C, E],
-                   cfield: Field[C],
-                   ering: Ring[E],
-                   conve: ConvertableFrom[E]): Poly[C, E] =  quotMod(x, y)._2
+  def mod(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] =  quotMod(x, y)._2
 
-  def gcd(x: Poly[C, E], y: Poly[C, E])
-         (implicit tR: TermRing[C, E],
-                   cfield: Field[C],
-                   ering: Ring[E],
-                   conve: ConvertableFrom[E]): Poly[C, E] = 
+  @tailrec def gcd(x: Poly[C, E], y: Poly[C, E]): Poly[C, E] = 
   	if(y.isZero && x.isZero) zero else if(y.isZero) x.monic
       else gcd(y, mod(x, y))
 
