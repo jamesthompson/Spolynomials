@@ -5,34 +5,39 @@ import spire.math._
 import spire.implicits._
 import spire.syntax._
 
-// Univariate polynomial term
-case class Term[C, E](val coeff: C, val exp: E)
-										 (implicit cord: Order[C], 
-										 					 eord: Order[E],
-										 					 cring: Ring[C],
-										 					 ering: Ring[E],
-										 					 conve: ConvertableFrom[E]) {
-	require(eord.gteqv(exp, ering.zero), 
-						"Polynomials terms must have a positive or zeroth order exponent")
+// Univariate polynomial term - No requirements for instantiation whatsoever.
+// n.b. for calculus and division by a scalar a Field[C] instance is required.
+case class Term[C, E](val coeff: C, val exp: E) {
 
-	def eval(x: C): C = cring.times(coeff, cring.pow(x, conve.toInt(exp)))
+	def eval(x: C)(implicit cring: Ring[C], 
+													conve: ConvertableFrom[E]): C = 
+		cring.times(coeff, cring.pow(x, conve.toInt(exp)))
 
-	def isIndexZero: Boolean = eord.eqv(exp, ering.zero)
+	def isIndexZero(implicit eord: Order[E],
+													 ering: Ring[E]): Boolean = 
+		eord.eqv(exp, ering.zero)
 
-	def isZero: Boolean = cord.eqv(coeff, cring.zero)
+	def isZero(implicit cord: Order[C],
+											cring: Ring[C]): Boolean = 
+		cord.eqv(coeff, cring.zero)
 
 	def divideBy(x: C)(implicit cfield: Field[C]): Term[C, E] = 
 		Term(cfield.div(coeff, x), exp)
 
-	def der: Term[C, E] = 
+	def der(implicit cring: Ring[C],
+									 ering: Ring[E],
+									 conve: ConvertableFrom[E]): Term[C, E] = 
 		Term(cring.times(coeff, cring.fromInt(conve.toInt(exp))), 
 					ering.minus(exp, ering.one))
 
-	def int(implicit cfield: Field[C]): Term[C, E] = 
-		Term(cfield.div(coeff, cring.fromInt(conve.toInt(ering.plus(exp, ering.one)))), 
+	def int(implicit cfield: Field[C],
+									 ering: Ring[E],
+									 conve: ConvertableFrom[E]): Term[C, E] = 
+		Term(cfield.div(coeff, cfield.fromInt(conve.toInt(ering.plus(exp, ering.one)))), 
 					ering.plus(exp, ering.one))
 
-	override def toString = {
+	def termString(implicit cord: Order[C],
+													cring: Ring[C]) = {
 		val pm = cord.compare(coeff, cring.zero)
 		(coeff, exp) match {
 			case (0, i) => ""
@@ -51,23 +56,24 @@ case class Term[C, E](val coeff: C, val exp: E)
 // Univariate polynomial terms form a ring
 trait TermRing[C, E] extends Ring[Term[C, E]] {
 
-	implicit val cord: Order[C] = Order[C]
-	implicit val eord: Order[E] = Order[E]
-	implicit val cring: Ring[C] = Ring[C]
-	implicit val ering: Ring[E] = Ring[E]
-	implicit val conve: ConvertableFrom[E] = ConvertableFrom[E]
-
-	def negate(t: Term[C, E]): Term[C, E] = 
+	def negate(t: Term[C, E])(implicit cring: Ring[C]): Term[C, E] = 
 		Term(cring.negate(t.coeff), t.exp)
 
-	def zero: Term[C, E] = Term(cring.zero, ering.zero)
+	def zero(implicit cring: Ring[C],
+										ering: Ring[E]): Term[C, E] = 
+		Term(cring.zero, ering.zero)
 
-	def one: Term[C, E] = Term(cring.one, ering.zero)
+	def one(implicit cring: Ring[C],
+										ering: Ring[E]): Term[C, E] = 
+		Term(cring.one, ering.zero)
 
-	def plus(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
+	def plus(x: Term[C, E], y: Term[C, E])
+					(implicit cring: Ring[C]): Term[C, E] = 
 		Term(cring.plus(x.coeff, y.coeff), y.exp)
 
-	def times(x: Term[C, E], y: Term[C, E]): Term[C, E] = 
+	def times(x: Term[C, E], y: Term[C, E])
+					 (implicit cring: Ring[C],
+										ering: Ring[E]): Term[C, E] = 
 		Term(cring.times(x.coeff, y.coeff), ering.plus(x.exp, y.exp))
 
 	}
