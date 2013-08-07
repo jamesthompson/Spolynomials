@@ -61,18 +61,16 @@ case class Polynomial[C: ClassTag](data: Map[Long, C]) {
   }
 
   def allTerms(implicit r: Ring[C]): Array[Term[C]] = {
-    val ts = terms
-    QuickSort.sort(ts)
     val m = maxOrder
     val cs = new Array[Term[C]]((m + 1).intValue)
-    ts.foreach(t => cs(t.exp.intValue) = t)
+    terms.foreach(t => cs(t.exp.intValue) = t)
     for(i <- 0 to m.intValue)
       if (cs(i) == null) cs(i) = Term(r.zero, i)
-    cs
+    cs.reverse
   }
 
-  def coeffs: Array[C] =
-    data.values.toArray
+  def coeffs(implicit r: Ring[C]): Array[C] =
+    allTerms.map(_.coeff)
 
   def maxTerm(implicit r: Ring[C]): Term[C] =
     data.foldLeft(Term.zero[C]) { case (term, (e, c)) =>
