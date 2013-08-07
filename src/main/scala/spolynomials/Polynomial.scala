@@ -132,7 +132,7 @@ class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 
 object Poly {
 
-  implicit def pRDI[C: ClassTag, E]: PolynomialRing[Double, Int] = new PolynomialRing[Double, Int] {
+  implicit def pRDI: PolynomialRing[Double, Int] = new PolynomialRing[Double, Int] {
   	val ctc = classTag[Double]
   	val cring = Ring[Double]
   	val ering = Ring[Int]
@@ -142,7 +142,7 @@ object Poly {
   	val cfield = Field[Double]
   }
 
-  implicit def pRRI[C: ClassTag, E]: PolynomialRing[Rational, Int] = new PolynomialRing[Rational, Int] {
+  implicit def pRRI: PolynomialRing[Rational, Int] = new PolynomialRing[Rational, Int] {
   	val ctc = classTag[Rational]
   	val cring = Ring[Rational]
   	val ering = Ring[Int]
