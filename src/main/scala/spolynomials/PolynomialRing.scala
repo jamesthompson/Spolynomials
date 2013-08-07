@@ -1,6 +1,7 @@
 package spolynomials
 
 import scala.reflect.ClassTag
+import scala.annotation.tailrec
 import spire.algebra._
 import spire.math._
 import spire.implicits._
@@ -53,7 +54,7 @@ trait PolynomialRing[C] extends EuclideanRing[Polynomial[C]] {
     def polyFromCoeffsLE(cs: Iterable[C]): Polynomial[C] =
       Polynomial(cs.zipWithIndex.map { case (c, e) => Term(c, e) })
       
-    def eval(q: List[C], u: Polynomial[C], n: Long): (Polynomial[C], Polynomial[C]) = {
+    @tailrec def eval(q: List[C], u: Polynomial[C], n: Long): (Polynomial[C], Polynomial[C]) = {
       lazy val q0 = u.maxOrderTermCoeff / y.maxOrderTermCoeff
       lazy val uprime = zipSum(u.coeffs, y.coeffs.map(_ * -q0))
       if (u.isZero || n < 0) (polyFromCoeffsLE(q), u) else eval(q0 :: q, uprime, n - 1)
@@ -66,7 +67,7 @@ trait PolynomialRing[C] extends EuclideanRing[Polynomial[C]] {
     
   def mod(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] = quotMod(x, y)._2
 
-  def gcd(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] =
+  @tailrec final def gcd(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] =
     if (y.isZero && x.isZero) zero
     else if (y.maxTerm.isZero) x
     else gcd(y, mod(x, y))

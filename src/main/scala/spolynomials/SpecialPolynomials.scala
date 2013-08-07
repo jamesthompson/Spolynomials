@@ -8,7 +8,7 @@ import spire.syntax._
 object SpecialPolynomials {
 
 	// Returns a list of legendre polynomials (Rational kind) up to i
-	def legendres(i: Int)(implicit r: Numeric[Rational], pr: PolynomialRing[Rational]) : List[Polynomial[Rational]] = {
+	def legendres(i: Int)(implicit r: Numeric[Rational]) : List[Polynomial[Rational]] = {
 	  val one = Polynomial(Map(0L -> r.one))
 	  val x = Polynomial(Map(1L -> r.one))
 	  lazy val leg : Stream[Polynomial[Rational]] = {
