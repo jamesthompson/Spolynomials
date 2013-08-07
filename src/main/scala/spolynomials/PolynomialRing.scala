@@ -7,53 +7,53 @@ import spire.implicits._
 import spire.math.compat._
 
 // Univariate Polynomials Form a Ring
-trait PolynomialRing[C] extends EuclideanRing[Poly[C]] {
+trait PolynomialRing[C] extends EuclideanRing[Polynomial[C]] {
 
-  implicit def ctc: ClassTag[C]
-  implicit def cring: Ring[C]
-  implicit def cord: Order[C]
-  implicit def cfield: Field[C]
+  implicit def ct: ClassTag[C]
+  implicit def r: Ring[C]
+  implicit def o: Order[C]
+  implicit def f: Field[C]
 
   implicit def tR: Ring[Term[C]] = new Ring[Term[C]] {
     def negate(t: Term[C]): Term[C] = Term(-t.coeff, t.exp)
-    def zero: Term[C] = Term(cring.zero, 0)
-    def one: Term[C] = Term(cring.one, 0)
+    def zero: Term[C] = Term(r.zero, 0L)
+    def one: Term[C] = Term(r.one, 0L)
     def plus(x: Term[C], y: Term[C]): Term[C] =
-      Term(x.coeff + y.coeff, y.exp) //FIXME
+      Term(x.coeff + y.coeff, y.exp)
     def times(x: Term[C], y: Term[C]): Term[C] =
       Term(x.coeff * y.coeff, x.exp + y.exp)
   }
 
-  def zero = Poly(Map(0 -> cring.zero))
+  def zero = Polynomial(Map(0L -> r.zero))
 
-  def one = Poly(Map(0 -> cring.one))
+  def one = Polynomial(Map(0L -> r.one))
 
-  def negate(x: Poly[C]): Poly[C] =
-    Poly(x.data.map { case (e, c) => (e, -c) })
+  def negate(x: Polynomial[C]): Polynomial[C] =
+    Polynomial(x.data.map { case (e, c) => (e, -c) })
 
-  def plus(x: Poly[C], y: Poly[C]): Poly[C] =
-    Poly(x.data + y.data)
+  def plus(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] =
+    Polynomial(x.data + y.data)
 
-  def times(x: Poly[C], y: Poly[C]): Poly[C] =
-    Poly(x.data.flatMap { case (ex, cx) =>
+  def times(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] =
+    Polynomial(x.data.flatMap { case (ex, cx) =>
       y.data.map { case (ey, cy) => (ex + ey, cx * cy) }
     })
 
-  def quotMod(x: Poly[C], y: Poly[C]): (Poly[C], Poly[C]) = {
+  def quotMod(x: Polynomial[C], y: Polynomial[C]): (Polynomial[C], Polynomial[C]) = {
     require(!y.isZero, "Can't divide by polynomial of zero!")
       
-    def zipSum(x: Array[C], y: Array[C]): Poly[C] = {
+    def zipSum(x: Array[C], y: Array[C]): Polynomial[C] = {
       val (s, l) = if(x.length > y.length) (y, x) else (x, y)
       val cs = s.zip(l).map(z => z._1 + z._2) ++ l.drop(s.length)
-      Poly(cs.zip(((cs.length - 1) to 0 by -1)).tail.map {
+      Polynomial(cs.zip(((cs.length - 1) to 0 by -1)).tail.map {
         case (c, e) => Term(c, e)
       })
     }
 
-    def polyFromCoeffsLE(cs: Iterable[C]): Poly[C] =
-      Poly(cs.zipWithIndex.map { case (c, e) => Term(c, e) })
+    def polyFromCoeffsLE(cs: Iterable[C]): Polynomial[C] =
+      Polynomial(cs.zipWithIndex.map { case (c, e) => Term(c, e) })
       
-    def eval(q: List[C], u: Poly[C], n: Int): (Poly[C], Poly[C]) = {
+    def eval(q: List[C], u: Polynomial[C], n: Long): (Polynomial[C], Polynomial[C]) = {
       lazy val q0 = u.maxOrderTermCoeff / y.maxOrderTermCoeff
       lazy val uprime = zipSum(u.coeffs, y.coeffs.map(_ * -q0))
       if (u.isZero || n < 0) (polyFromCoeffsLE(q), u) else eval(q0 :: q, uprime, n - 1)
@@ -62,12 +62,13 @@ trait PolynomialRing[C] extends EuclideanRing[Poly[C]] {
     eval(Nil, x, x.degree - y.degree)
   }
 
-  def quot(x: Poly[C], y: Poly[C]): Poly[C] = quotMod(x, y)._1
+  def quot(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] = quotMod(x, y)._1
     
-  def mod(x: Poly[C], y: Poly[C]): Poly[C] = quotMod(x, y)._2
+  def mod(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] = quotMod(x, y)._2
 
-  def gcd(x: Poly[C], y: Poly[C]): Poly[C] =
+  def gcd(x: Polynomial[C], y: Polynomial[C]): Polynomial[C] =
     if (y.isZero && x.isZero) zero
     else if (y.maxTerm.isZero) x
     else gcd(y, mod(x, y))
+
 }

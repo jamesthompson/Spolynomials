@@ -8,108 +8,108 @@ import spire.syntax._
 
 
 // Univariate polynomial term
-// n.b. for calculus and division by a scalar a Field[C] instance is required.
-case class Term[C](coeff: C, exp: Int) {
+// n.b. for calculus and division by a C, a Field[C] instance is required.
+case class Term[C](coeff: C, exp: Long) {
 
-  def toTuple: (Int, C) = (exp, coeff)
+  def toTuple: (Long, C) = (exp, coeff)
 
-  def eval(x: C)(implicit cring: Ring[C]): C =
-    coeff * (x pow exp)
+  def eval(x: C)(implicit r: Ring[C]): C =
+    coeff * (x pow exp.intValue)
 
-  def isIndexZero: Boolean =
+  def isIndexZero: Boolean = 
     exp == 0
 
-  def isZero(implicit ceq: Eq[C], cring: Ring[C]): Boolean =
-    coeff === cring.zero
+  def isZero(implicit eq: Eq[C], r: Ring[C]): Boolean =
+    coeff === r.zero
 
-  def divideBy(x: C)(implicit cfield: Field[C]): Term[C] =
+  def divideBy(x: C)(implicit f: Field[C]): Term[C] =
     Term(coeff / x, exp)
 
-  def der(implicit cring: Ring[C]): Term[C] =
-    Term(coeff * cring.fromInt(exp), exp - 1)
+  def der(implicit r: Ring[C]): Term[C] =
+    Term(coeff * r.fromInt(exp.intValue), exp - 1)
 
-  def int(implicit cfield: Field[C]): Term[C] =
-    Term(coeff / cfield.fromInt(exp + 1), exp + 1)
+  def int(implicit f: Field[C]): Term[C] =
+    Term(coeff / f.fromInt((exp + 1).intValue), exp + 1)
 
-  def termString(implicit cord: Order[C], cring: Ring[C]) = {
-    import cring._
-    (coeff, exp) match {
+  def termString(implicit o: Order[C], r: Ring[C]) = {
+    import r._
+    (coeff, exp.intValue) match {
       case (0, _) => ""
-      case (1, i) => if (i > 0) s" + x^$i" else s" + x"
-      case (-1, i) => if (i > 0) s" - x^$i" else s" - x"
       case (c, 0) => if (c >= zero) s" + ${c}" else s" - ${-c}"
+      case (1, e) => if (e > 1) s" + x^$e" else s" + x"
+      case (-1, e) => if (e > 1) s" - x^$e" else s" - x"
       case (c, 1) => if (c >= zero) s" + ${c}x" else s" - ${-c}x"
-      case (c, i) => if (c >= zero) s" + ${c}x^$i" else s" - ${-c}x^$i"
+      case (c, e) => if (c >= zero) s" + ${c}x^$e" else s" - ${-c}x^$e"
     }
   }
 }
 
 object Term {
-  def fromTuple[C](tpl: (Int, C)): Term[C] = Term(tpl._2, tpl._1)
-  def zero[C](implicit cring: Ring[C]): Term[C] = Term(cring.zero, 0)
-  def one[C](implicit cring: Ring[C]): Term[C] = Term(cring.one, 0)
+  def fromTuple[C](tpl: (Long, C)): Term[C] = Term(tpl._2, tpl._1)
+  def zero[C](implicit r: Ring[C]): Term[C] = Term(r.zero, 0L)
+  def one[C](implicit r: Ring[C]): Term[C] = Term(r.one, 0L)
 }
 
 // Univariate polynomial class
-case class Poly[C: ClassTag](data: Map[Int, C]) {
+case class Polynomial[C: ClassTag](data: Map[Long, C]) {
 
   def terms: Array[Term[C]] =
     data.map(Term.fromTuple).toArray
 
-  implicit object BigEndianPolyOrdering extends Order[Term[C]] {
+  implicit object BigEndianPolynomialOrdering extends Order[Term[C]] {
     def compare(x:Term[C], y:Term[C]): Int = y.exp compare x.exp
   }
 
-  def allTerms(implicit cring: Ring[C]): Array[Term[C]] = {
+  def allTerms(implicit r: Ring[C]): Array[Term[C]] = {
     val ts = terms
     QuickSort.sort(ts)
     val m = maxOrder
-    val cs = new Array[Term[C]](m + 1)
-    ts.foreach(t => cs(t.exp) = t)
-    for(i <- 0 to m)
-      if (cs(i) == null) cs(i) = Term(cring.zero, i)
+    val cs = new Array[Term[C]]((m + 1).intValue)
+    ts.foreach(t => cs(t.exp.intValue) = t)
+    for(i <- 0 to m.intValue)
+      if (cs(i) == null) cs(i) = Term(r.zero, i)
     cs
   }
 
   def coeffs: Array[C] =
     data.values.toArray
 
-  def maxTerm(implicit cring: Ring[C]): Term[C] =
+  def maxTerm(implicit r: Ring[C]): Term[C] =
     data.foldLeft(Term.zero[C]) { case (term, (e, c)) =>
       if (term.exp < e) Term(c, e) else term
     }
 
-  def maxOrder(implicit cring: Ring[C]): Int =
+  def maxOrder(implicit r: Ring[C]): Long =
     if (data.isEmpty) 0 else data.keys.qmax
 
-  def maxOrderTermCoeff(implicit cring: Ring[C]): C =
+  def maxOrderTermCoeff(implicit r: Ring[C]): C =
     maxTerm.coeff
 
-  def degree(implicit cring: Ring[C], eqv: Eq[C]): Int =
+  def degree(implicit r: Ring[C], eq: Eq[C]): Long =
     data.foldLeft(0) { case (d, (e, c)) =>
-      if (e > d && c =!= cring.zero) e else d
+      if (e > d && c =!= r.zero) e.intValue else d
     }
 	
-  def apply(x: C)(implicit cring: Ring[C]): C =
-    data.foldLeft(cring.zero)((sum, t) => sum + Term.fromTuple(t).eval(x))
+  def apply(x: C)(implicit r: Ring[C]): C =
+    data.foldLeft(r.zero)((sum, t) => sum + Term.fromTuple(t).eval(x))
 
-  def isZero(implicit cring: Ring[C], eqv: Eq[C]): Boolean =
-    data.forall { case (e, c) => c === cring.zero }
+  def isZero(implicit r: Ring[C], eq: Eq[C]): Boolean =
+    data.forall { case (e, c) => c === r.zero }
 
-  def monic(implicit cfield: Field[C]): Poly[C] = {
+  def monic(implicit f: Field[C]): Polynomial[C] = {
     val m = maxOrderTermCoeff
-    Poly(data.map { case (e, c) => (e, c / m) })
+    Polynomial(data.map { case (e, c) => (e, c / m) })
   }
 	
-  def derivative(implicit cring: Ring[C]): Poly[C] =
-    Poly(data.flatMap { case (e, c) =>
+  def derivative(implicit r: Ring[C]): Polynomial[C] =
+    Polynomial(data.flatMap { case (e, c) =>
       if (e > 0) Some(Term(c, e).der) else None
     })
 	
-  def integral(implicit cfield: Field[C]): Poly[C] =
-    Poly(data.map(t => Term.fromTuple(t).int))
+  def integral(implicit f: Field[C]): Polynomial[C] =
+    Polynomial(data.map(t => Term.fromTuple(t).int))
 	
-  def show(implicit cord: Order[C], cring: Ring[C]) : String =
+  def show(implicit o: Order[C], r: Ring[C]) : String =
     if (isZero) {
       "(0)"
     } else {
@@ -121,22 +121,22 @@ case class Poly[C: ClassTag](data: Map[Int, C]) {
 }
 
 
-object Poly {
+object Polynomial {
 
-  def apply[C: ClassTag](terms: Iterable[Term[C]]): Poly[C] =
-    Poly(terms.map(_.toTuple).toMap)
+  def apply[C: ClassTag](terms: Iterable[Term[C]]): Polynomial[C] =
+    Polynomial(terms.map(_.toTuple).toMap)
 
-  implicit def pRDI: PolynomialRing[Double] = new PolynomialRing[Double] {
-    val ctc = classTag[Double]
-    val cring = Ring[Double]
-    val cord = Order[Double]
-    val cfield = Field[Double]
+  implicit def pRD: PolynomialRing[Double] = new PolynomialRing[Double] {
+    val ct = classTag[Double]
+    val r = Ring[Double]
+    val o = Order[Double]
+    val f = Field[Double]
   }
 
-  implicit def pRRI: PolynomialRing[Rational] = new PolynomialRing[Rational] {
-    val ctc = classTag[Rational]
-    val cring = Ring[Rational]
-    val cord = Order[Rational]
-    val cfield = Field[Rational]
+  implicit def pRR: PolynomialRing[Rational] = new PolynomialRing[Rational] {
+    val ct = classTag[Rational]
+    val r = Ring[Rational]
+    val o = Order[Rational]
+    val f = Field[Rational]
   }
 }
