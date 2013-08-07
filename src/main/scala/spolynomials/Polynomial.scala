@@ -56,6 +56,7 @@ case class Term[C, E](val coeff: C, val exp: E) {
 }
 
 
+
 // Univariate polynomial class
 class Poly[C: ClassTag, E](val terms: Array[Term[C, E]])
 													(implicit eord: Order[E]) {
