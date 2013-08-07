@@ -11,6 +11,8 @@ import spire.syntax._
 // n.b. for calculus and division by a scalar a Field[C] instance is required.
 case class Term[C](coeff: C, exp: Int) {
 
+  def toTuple: (Int, C) = (exp, coeff)
+
   def eval(x: C)(implicit cring: Ring[C]): C =
     coeff * (x pow exp)
 
@@ -30,25 +32,29 @@ case class Term[C](coeff: C, exp: Int) {
     Term(coeff / cfield.fromInt(exp + 1), exp + 1)
 
   def termString(implicit cord: Order[C], cring: Ring[C]) = {
-    val pm = coeff compare cring.zero
+    import cring._
     (coeff, exp) match {
-      case (0, i) => ""
-      case (1, 0) => if (pm >= 0) " + 1" else " - 1"
-      case (-1, 1) => " - x"
-      case (1, 1) => " + x"
-      case (c, 1) => if (pm >= 0) s" + ${c}x" else s" - ${c.unary_-}x"
-      case (1, i) => if (pm >= 0) s" + x^$i" else s" - x^$i"
-      case (c, 0) => if (pm >= 0) s" + ${c}" else s" - ${c.unary_-}"
-      case (c, i) => if (pm >= 0) s" + ${c}x^$i" else s" - ${c.unary_-}x^$i"
+      case (0, _) => ""
+      case (1, i) => if (i > 0) s" + x^$i" else s" + x"
+      case (-1, i) => if (i > 0) s" - x^$i" else s" - x"
+      case (c, 0) => if (c >= zero) s" + ${c}" else s" - ${-c}"
+      case (c, 1) => if (c >= zero) s" + ${c}x" else s" - ${-c}x"
+      case (c, i) => if (c >= zero) s" + ${c}x^$i" else s" - ${-c}x^$i"
     }
   }
 }
 
+object Term {
+  def fromTuple[C](tpl: (Int, C)): Term[C] = Term(tpl._2, tpl._1)
+  def zero[C](implicit cring: Ring[C]): Term[C] = Term(cring.zero, 0)
+  def one[C](implicit cring: Ring[C]): Term[C] = Term(cring.one, 0)
+}
 
 // Univariate polynomial class
 case class Poly[C: ClassTag](data: Map[Int, C]) {
 
-  def terms: Array[Term[C]] = data.map { case (e, c) => Term(c, e) }.toArray
+  def terms: Array[Term[C]] =
+    data.map(Term.fromTuple).toArray
 
   implicit object BigEndianPolyOrdering extends Order[Term[C]] {
     def compare(x:Term[C], y:Term[C]): Int = y.exp compare x.exp
@@ -66,50 +72,59 @@ case class Poly[C: ClassTag](data: Map[Int, C]) {
   }
 
   def coeffs: Array[C] =
-    terms.map(_.coeff)
+    data.values.toArray
 
   def maxTerm(implicit cring: Ring[C]): Term[C] =
-    if (isZero) Term(cring.zero, 0) else terms.qmin
+    data.foldLeft(Term.zero[C]) { case (term, (e, c)) =>
+      if (term.exp < e) Term(c, e) else term
+    }
 
   def maxOrder(implicit cring: Ring[C]): Int =
-    maxTerm.exp
+    if (data.isEmpty) 0 else data.keys.qmax
 
   def maxOrderTermCoeff(implicit cring: Ring[C]): C =
     maxTerm.coeff
 
-  def degree(implicit cring: Ring[C], eqv: Eq[C]): Int = {
-    val ts = terms.filter(_.coeff =!= cring.zero)
-    if (ts.isEmpty) 0 else ts.qmin.exp
-  }
+  def degree(implicit cring: Ring[C], eqv: Eq[C]): Int =
+    data.foldLeft(0) { case (d, (e, c)) =>
+      if (e > d && c =!= cring.zero) e else d
+    }
 	
   def apply(x: C)(implicit cring: Ring[C]): C =
-    terms.map(_.eval(x)).qsum
+    data.foldLeft(cring.zero)((sum, t) => sum + Term.fromTuple(t).eval(x))
 
-  //def isZero: Boolean = terms.forall(_.isZero)
-  def isZero = terms.isEmpty
+  def isZero(implicit cring: Ring[C], eqv: Eq[C]): Boolean =
+    data.forall { case (e, c) => c === cring.zero }
 
-  def monic(implicit cfield: Field[C]): Poly[C] = 
-    if (isZero) this else Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
-	
-  def derivative(implicit cring: Ring[C]): Poly[C] = 
-    Poly(terms.filterNot(_.isIndexZero).map(_.der))
-	
-  def integral(implicit cfield: Field[C]): Poly[C] = 
-    Poly(terms.map(_.int))
-	
-  def show(implicit cord: Order[C], cring: Ring[C]) : String = {
-    val ts = terms
-    QuickSort.sort(ts)
-    val s = ts.map(_.termString).mkString
-    if(s.take(3) == " - ") "-" + s.drop(3) else s.drop(3)
+  def monic(implicit cfield: Field[C]): Poly[C] = {
+    val m = maxOrderTermCoeff
+    Poly(data.map { case (e, c) => (e, c / m) })
   }
+	
+  def derivative(implicit cring: Ring[C]): Poly[C] =
+    Poly(data.flatMap { case (e, c) =>
+      if (e > 0) Some(Term(c, e).der) else None
+    })
+	
+  def integral(implicit cfield: Field[C]): Poly[C] =
+    Poly(data.map(t => Term.fromTuple(t).int))
+	
+  def show(implicit cord: Order[C], cring: Ring[C]) : String =
+    if (isZero) {
+      "(0)"
+    } else {
+      val ts = terms
+      QuickSort.sort(ts)
+      val s = ts.map(_.termString).mkString
+      "(" + (if (s.take(3) == " - ") "-" + s.drop(3) else s.drop(3)) + ")"
+    }
 }
 
 
 object Poly {
 
-  def apply[C: ClassTag](arr: Array[Term[C]]): Poly[C] =
-    Poly(arr.map { case Term(c, e) => (e, c) }.toMap)
+  def apply[C: ClassTag](terms: Iterable[Term[C]]): Poly[C] =
+    Poly(terms.map(_.toTuple).toMap)
 
   implicit def pRDI: PolynomialRing[Double] = new PolynomialRing[Double] {
     val ctc = classTag[Double]
