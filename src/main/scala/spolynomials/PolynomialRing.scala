@@ -23,15 +23,15 @@ trait PolynomialRing[C] extends EuclideanRing[Poly[C]] {
       Term(x.coeff * y.coeff, x.exp + y.exp)
   }
 
-  def zero = new Poly(Array(tR.zero))
+  def zero = Poly(Array(tR.zero))
 
-  def one = new Poly(Array(tR.one))
+  def one = Poly(Array(tR.one))
 
   def negate(x: Poly[C]): Poly[C] =
-    new Poly(x.terms.map(-_))
+    Poly(x.terms.map(-_))
 
   def clearZeroesPoly(x: Array[Term[C]]): Poly[C] =
-    new Poly(x.groupBy(_.exp).map({
+    Poly(x.groupBy(_.exp).map({
       case (e, l) => l.foldLeft(tR.zero)(_ + _)}).toArray)
 
   def plus(x: Poly[C], y: Poly[C]): Poly[C] =
@@ -46,13 +46,13 @@ trait PolynomialRing[C] extends EuclideanRing[Poly[C]] {
     def zipSum(x: Array[C], y: Array[C]): Poly[C] = {
       val (s, l) = if(x.length > y.length) (y, x) else (x, y)
       val cs = s.zip(l).map(z => z._1 + z._2) ++ l.drop(s.length)
-      new Poly(cs.zip(((cs.length - 1) to 0 by -1)).tail.map({
+      Poly(cs.zip(((cs.length - 1) to 0 by -1)).tail.map({
         case (c, e) => Term(c, e)
       }))
     }
 
     def polyFromCoeffsLE(cs: Array[C]): Poly[C] =
-      new Poly(cs.zip((0 until cs.length)).map({
+      Poly(cs.zip((0 until cs.length)).map({
         case (c, e) => Term(c, e)
       }))
       

@@ -45,19 +45,21 @@ case class Term[C](coeff: C, exp: Int) {
 }
 
 
-
 // Univariate polynomial class
-case class Poly[C: ClassTag](terms: Array[Term[C]]) {
+case class Poly[C: ClassTag](data: Map[Int, C]) {
+
+  def terms: Array[Term[C]] = data.map { case (e, c) => Term(c, e) }.toArray
 
   implicit object BigEndianPolyOrdering extends Order[Term[C]] {
     def compare(x:Term[C], y:Term[C]): Int = y.exp compare x.exp
   }
 
   def allTerms(implicit cring: Ring[C]): Array[Term[C]] = {
-    QuickSort.sort(terms)
+    val ts = terms
+    QuickSort.sort(ts)
     val m = maxOrder
     val cs = new Array[Term[C]](m + 1)
-    terms.foreach(t => cs(t.exp) = t)
+    ts.foreach(t => cs(t.exp) = t)
     for(i <- 0 to m)
       if (cs(i) == null) cs(i) = Term(cring.zero, i)
     cs
@@ -87,23 +89,27 @@ case class Poly[C: ClassTag](terms: Array[Term[C]]) {
   def isZero = terms.isEmpty
 
   def monic(implicit cfield: Field[C]): Poly[C] = 
-    if (isZero) this else new Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
+    if (isZero) this else Poly(terms.map(_.divideBy(maxOrderTermCoeff)))
 	
   def derivative(implicit cring: Ring[C]): Poly[C] = 
-    new Poly(terms.filterNot(_.isIndexZero).map(_.der))
+    Poly(terms.filterNot(_.isIndexZero).map(_.der))
 	
   def integral(implicit cfield: Field[C]): Poly[C] = 
-    new Poly(terms.map(_.int))
+    Poly(terms.map(_.int))
 	
   def show(implicit cord: Order[C], cring: Ring[C]) : String = {
-    QuickSort.sort(terms)
-    val s = terms.map(_.termString).mkString
+    val ts = terms
+    QuickSort.sort(ts)
+    val s = ts.map(_.termString).mkString
     if(s.take(3) == " - ") "-" + s.drop(3) else s.drop(3)
   }
 }
 
 
 object Poly {
+
+  def apply[C: ClassTag](arr: Array[Term[C]]): Poly[C] =
+    Poly(arr.map { case Term(c, e) => (e, c) }.toMap)
 
   implicit def pRDI: PolynomialRing[Double] = new PolynomialRing[Double] {
     val ctc = classTag[Double]
