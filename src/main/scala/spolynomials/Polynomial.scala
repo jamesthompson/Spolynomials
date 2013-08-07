@@ -50,6 +50,7 @@ object Term {
   def one[C](implicit r: Ring[C]): Term[C] = Term(r.one, 0L)
 }
 
+
 // Univariate polynomial class
 case class Polynomial[C: ClassTag](data: Map[Long, C]) {
 
@@ -87,7 +88,7 @@ case class Polynomial[C: ClassTag](data: Map[Long, C]) {
     data.foldLeft(0) { case (d, (e, c)) =>
       if (e > d && c =!= r.zero) e.intValue else d
     }
-	
+  
   def apply(x: C)(implicit r: Ring[C]): C =
     data.foldLeft(r.zero)((sum, t) => sum + Term.fromTuple(t).eval(x))
 
@@ -98,15 +99,15 @@ case class Polynomial[C: ClassTag](data: Map[Long, C]) {
     val m = maxOrderTermCoeff
     Polynomial(data.map { case (e, c) => (e, c / m) })
   }
-	
-  def derivative(implicit r: Ring[C]): Polynomial[C] =
+  
+  def derivative(implicit r: Ring[C], eq: Eq[C]): Polynomial[C] =
     Polynomial(data.flatMap { case (e, c) =>
       if (e > 0) Some(Term(c, e).der) else None
     })
-	
-  def integral(implicit f: Field[C]): Polynomial[C] =
+  
+  def integral(implicit f: Field[C], eq: Eq[C]): Polynomial[C] =
     Polynomial(data.map(t => Term.fromTuple(t).int))
-	
+  
   def show(implicit o: Order[C], r: Ring[C]) : String =
     if (isZero) {
       "(0)"
@@ -121,8 +122,13 @@ case class Polynomial[C: ClassTag](data: Map[Long, C]) {
 
 object Polynomial {
 
-  def apply[C: ClassTag](terms: Iterable[Term[C]]): Polynomial[C] =
-    Polynomial(terms.map(_.toTuple).toMap)
+  /* We have to get rid of coeff=zero terms here for long division
+     operations.
+    I think we should have an Eq[C] and Ring[C] requirement for Polys.
+  */
+  def apply[C: ClassTag](terms: Iterable[Term[C]])
+                        (implicit eq: Eq[C], r: Ring[C]): Polynomial[C] =
+    Polynomial(terms.filterNot(_.isZero).map(_.toTuple).toMap)
 
   implicit def pRD: PolynomialRing[Double] = new PolynomialRing[Double] {
     val ct = classTag[Double]
